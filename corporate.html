@@ -361,6 +361,18 @@ em,.italic{font-style:italic;font-family:var(--serif)}
 .field select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' fill='none' stroke='%237C4A59' stroke-width='1.4'/></svg>");background-repeat:no-repeat;background-position:right 14px center;padding-right:34px}
 .rfp__form .btn{width:100%;text-align:center;margin-top:6px}
 .rfp__reply{text-align:center;font-size:.84rem;letter-spacing:.04em;color:var(--ink-soft);margin-top:14px;line-height:1.6}
+/* ---- inline form success / error states ---- */
+.form-done{background:var(--paper);border:1px solid rgba(176,137,90,.28);
+  padding:clamp(34px,5vw,60px);text-align:center;max-width:820px;margin:0 auto}
+.form-done__rule{width:52px;height:1px;background:var(--gold);margin:0 auto 26px}
+.form-done h3{font-family:var(--serif);font-weight:500;color:var(--mauve);
+  font-size:clamp(1.5rem,3vw,2.1rem);line-height:1.2;margin-bottom:14px}
+.form-done h3 em{font-style:italic;color:var(--lavender)}
+.form-done p{color:var(--ink-soft);max-width:44ch;margin:0 auto}
+.form-error{background:var(--cream-2);border:1px solid rgba(176,137,90,.35);
+  padding:16px 18px;margin-top:16px;text-align:center;font-size:.94rem;color:var(--ink)}
+[hidden]{display:none !important}
+
 
 /* ---- FAQ ---- */
 .faq__list{max-width:820px;margin:0 auto;border-top:1px solid rgba(178,150,94,.28)}
@@ -638,11 +650,11 @@ em,.italic{font-style:italic;font-family:var(--serif)}
 
       <!-- FORM ENDPOINT — replace FORMSPREE_ID below with the real form ID from
            formspree.io (Abby's account). Until then this form does not submit. -->
-      <form class="rfp__form reveal" action="https://formsubmit.co/abbyresnick@gmail.com" method="POST" novalidate>
+      <form class="rfp__form reveal" id="rfpForm" action="https://formsubmit.co/abbyresnick@gmail.com" method="POST">
+        <input type="hidden" name="_next" value="https://abbyresnick.com/thank-you.html">
         <input type="hidden" name="_subject" value="New corporate inquiry — abbyresnick.com">
         <input type="hidden" name="_template" value="table">
         <input type="hidden" name="_captcha" value="false">
-        <input type="hidden" name="_next" value="https://abbyresnick.com/thank-you.html">
         <input type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px">
         <div class="rfp__row">
           <div class="field">
@@ -651,14 +663,14 @@ em,.italic{font-style:italic;font-family:var(--serif)}
           </div>
           <div class="field">
             <label for="contact">Contact name</label>
-            <input type="text" id="contact" name="contact" autocomplete="name">
+            <input type="text" id="contact" name="contact" required autocomplete="name">
           </div>
         </div>
 
         <div class="rfp__row">
           <div class="field">
             <label for="email">Email</label>
-            <input type="email" id="email" name="email" autocomplete="email">
+            <input type="email" id="email" name="email" required autocomplete="email">
           </div>
           <div class="field">
             <label for="planner">Planner / DMC <span style="text-transform:none;letter-spacing:0;opacity:.7">(optional)</span></label>
@@ -717,6 +729,13 @@ em,.italic{font-style:italic;font-family:var(--serif)}
         <button type="submit" class="btn">Request a Quote</button>
         <p class="rfp__reply">No obligation &mdash; the consultation is free.</p>
       </form>
+
+    <div class="form-done" id="rfpDone" hidden role="status" aria-live="polite">
+      <div class="form-done__rule"></div>
+      <h3>Thank you &mdash; your note is <em>on its way.</em></h3>
+      <p>We&rsquo;ve received your inquiry and will follow up personally. We look forward to hearing about it.</p>
+    </div>
+
     </div>
   </div>
 </section>
@@ -830,6 +849,44 @@ em,.italic{font-style:italic;font-family:var(--serif)}
   closeBtn.addEventListener('click',close);
   m.querySelectorAll('a').forEach(function(a){a.addEventListener('click',close);});
   document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
+})();
+</script>
+
+<script>
+/* Inline AJAX submit — keeps visitors on the site, shows a branded success state.
+   Progressive enhancement: with JS off the form still POSTs normally. */
+(function(){
+  function wire(formId, doneId){
+    var f=document.getElementById(formId); if(!f) return;
+    var done=document.getElementById(doneId);
+    var btn=f.querySelector('button[type="submit"]');
+    var errBox=null;
+    function showError(msg){
+      if(!errBox){ errBox=document.createElement('p'); errBox.className='form-error'; f.appendChild(errBox); }
+      errBox.textContent=msg; errBox.hidden=false;
+    }
+    f.addEventListener('submit',function(e){
+      e.preventDefault();
+      if(!f.checkValidity()){ f.reportValidity(); return; }
+      if(errBox) errBox.hidden=true;
+      var label=btn.textContent;
+      btn.disabled=true; btn.textContent='Sending\u2026';
+      fetch(f.action.replace('formsubmit.co/','formsubmit.co/ajax/'),{method:'POST',body:new FormData(f),headers:{'Accept':'application/json'}})
+        .then(function(r){ return r.json().catch(function(){ return {}; }); })
+        .then(function(j){
+          var ok = j && (j.success===true || j.success==='true');
+          if(!ok) throw new Error((j&&j.message)||'Submission failed');
+          f.hidden=true; done.hidden=false;
+          done.scrollIntoView({behavior:'smooth',block:'center'});
+        })
+        .catch(function(){
+          btn.disabled=false; btn.textContent=label;
+          showError('Sorry \u2014 that didn\u2019t send. Please try again in a moment.');
+        });
+    });
+  }
+  wire('inqForm','inqDone');
+  wire('rfpForm','rfpDone');
 })();
 </script>
 </body></html>
