@@ -199,6 +199,7 @@ em,.italic{font-style:italic;font-family:var(--serif)}
    ========================================================================= */
 .split{display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:clamp(30px,6vw,90px)}
 .split--alt{background:var(--cream-2)}
+.split__body{padding-block:clamp(48px,6vw,86px);padding-inline-end:var(--pad)}
 .split__media{aspect-ratio:4/5;overflow:hidden;background:var(--cream)}
 .split__media img{width:100%;height:100%;object-fit:cover;object-position:center 22%}
 .split__body .eyebrow{display:block;margin-bottom:20px}
@@ -279,6 +280,7 @@ em,.italic{font-style:italic;font-family:var(--serif)}
   .hero{min-height:84vh}
   .products{grid-template-columns:repeat(2,1fr)}
   .split{grid-template-columns:1fr}
+  .split__body{padding:clamp(30px,6vw,48px) var(--pad) clamp(40px,7vw,56px)}
   .split__media{order:-1;aspect-ratio:4/5;max-height:70vh}
   .services{grid-template-columns:1fr}
   .service__img{aspect-ratio:16/10}
@@ -567,7 +569,6 @@ em,.italic{font-style:italic;font-family:var(--serif)}
     <p>Abby Resnick Floral Design began at a single worktable in Los Angeles, gathering flowers by hand for the people she knew. Today that table is a studio &mdash; a small, devoted team that brings the same intimate care to larger weddings, multi-day celebrations, and full-scale installations.</p>
     <p>We design, source, build, and style on site, so every event arrives feeling considered down to the last stem &mdash; whether it's a quiet dinner for ten or a celebration for three hundred.</p>
     <p class="split__sig">&mdash; Abby</p>
-    <a href="#studio" class="link-underline">Our story &rarr;</a>
   </div>
 </section>
 
