@@ -34,6 +34,7 @@
 
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
+section[id],div[id]{scroll-margin-top:110px}
 body{
   background:var(--cream);
   color:var(--ink);
@@ -406,7 +407,7 @@ em,.italic{font-style:italic;font-family:var(--serif)}
     </nav>
 
     <a href="index.html" class="brand" aria-label="Abby Resnick — Floral Design, Los Angeles">
-      <img class="brand-logo" src="assets/brand/logo.svg" alt="Abby Resnick — Floral Design, Los Angeles">
+      <img loading="lazy" decoding="async" class="brand-logo" src="assets/brand/logo.svg" alt="Abby Resnick — Floral Design, Los Angeles">
     </a>
 
     <nav class="nav__links nav__links--right" aria-label="Secondary">
@@ -441,7 +442,7 @@ em,.italic{font-style:italic;font-family:var(--serif)}
 <!-- 3) HERO -->
 <section class="hero" id="overview">
   <div class="hero__bg">
-    <img src="assets/corporate/hero.jpg" alt="A vivid sculptural floral arrangement set against a saturated colored wall at a brand activation">
+    <img fetchpriority="high" decoding="async" src="assets/corporate/hero.jpg" alt="A vivid sculptural floral arrangement set against a saturated colored wall at a brand activation">
   </div>
   <div class="hero__scrim"></div>
   <div class="hero__inner">
@@ -551,7 +552,7 @@ em,.italic{font-style:italic;font-family:var(--serif)}
 <!-- 7) ROI ARGUMENT -->
 <section class="split split--alt">
   <div class="split__media">
-    <img src="assets/corporate/roi.jpg" alt="A refined neutral floral arrangement matched to a brand palette and styled for photography">
+    <img loading="lazy" decoding="async" src="assets/corporate/roi.jpg" alt="A refined neutral floral arrangement matched to a brand palette and styled for photography">
   </div>
   <div class="split__body reveal">
     <p class="eyebrow">The Return</p>
@@ -608,12 +609,12 @@ em,.italic{font-style:italic;font-family:var(--serif)}
     </div>
 
     <div class="gallery reveal">
-      <a class="g-a" href="#inquiry"><img src="assets/corporate/p1.jpg" alt="Large hanging floral installation at a brand activation"></a>
-      <a class="g-b" href="#inquiry"><img src="assets/corporate/p3.jpg" alt="Dramatic gala banquet table styled with abundant florals"></a>
-      <a class="g-c" href="#inquiry"><img src="assets/corporate/p4.jpg" alt="Clean neutral conference venue setup with florals"></a>
-      <a class="g-d" href="#inquiry"><img src="assets/corporate/p5.jpg" alt="Bold modern sculptural floral arrangement at a product launch"></a>
-      <a class="g-e" href="#inquiry"><img src="assets/corporate/p6.jpg" alt="Sculptural florals at a private corporate dinner"></a>
-      <a class="g-f" href="#inquiry"><img src="assets/corporate/p2.jpg" alt="Suspended floral installation overhead at a brand activation"></a>
+      <a class="g-a" href="#inquiry"><img loading="lazy" decoding="async" src="assets/corporate/p1.jpg" alt="Large hanging floral installation at a brand activation"></a>
+      <a class="g-b" href="#inquiry"><img loading="lazy" decoding="async" src="assets/corporate/p3.jpg" alt="Dramatic gala banquet table styled with abundant florals"></a>
+      <a class="g-c" href="#inquiry"><img loading="lazy" decoding="async" src="assets/corporate/p4.jpg" alt="Clean neutral conference venue setup with florals"></a>
+      <a class="g-d" href="#inquiry"><img loading="lazy" decoding="async" src="assets/corporate/p5.jpg" alt="Bold modern sculptural floral arrangement at a product launch"></a>
+      <a class="g-e" href="#inquiry"><img loading="lazy" decoding="async" src="assets/corporate/p6.jpg" alt="Sculptural florals at a private corporate dinner"></a>
+      <a class="g-f" href="#inquiry"><img loading="lazy" decoding="async" src="assets/corporate/p2.jpg" alt="Suspended floral installation overhead at a brand activation"></a>
     </div>
   </div>
 </section>
@@ -638,10 +639,12 @@ em,.italic{font-style:italic;font-family:var(--serif)}
 
       <!-- FORM ENDPOINT — replace FORMSPREE_ID below with the real form ID from
            formspree.io (Abby's account). Until then this form does not submit. -->
-      <form class="rfp__form reveal" action="https://formspree.io/f/FORMSPREE_ID" method="POST" novalidate>
+      <form class="rfp__form reveal" action="https://formsubmit.co/abbyresnick@gmail.com" method="POST" novalidate>
         <input type="hidden" name="_subject" value="New corporate inquiry — abbyresnick.com">
-        <input type="hidden" name="_next" value="https://abbyresnick.com/thank-you.html">
-        <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px">
+        <input type="hidden" name="_template" value="table">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="_next" value="https://yoniversefilms.github.io/abbyresnick-site/thank-you.html">
+        <input type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px">
         <div class="rfp__row">
           <div class="field">
             <label for="company">Company</label>
@@ -763,7 +766,7 @@ em,.italic{font-style:italic;font-family:var(--serif)}
     <div class="footer__top">
       <div class="footer__brand">
         <a href="index.html" class="brand" aria-label="Abby Resnick — Floral Design, Los Angeles">
-          <img class="brand-logo brand-logo--footer" src="assets/brand/logo-reverse.svg" alt="Abby Resnick — Floral Design, Los Angeles">
+          <img loading="lazy" decoding="async" class="brand-logo brand-logo--footer" src="assets/brand/logo-reverse.svg" alt="Abby Resnick — Floral Design, Los Angeles">
         </a>
         <p>Corporate and brand-event florals in Los Angeles &mdash; sourced, installed, and struck end to end, so your team can focus on the guests.</p>
       </div>

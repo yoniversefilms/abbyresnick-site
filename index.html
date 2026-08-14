@@ -37,6 +37,7 @@
 
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
+section[id],div[id]{scroll-margin-top:110px}
 body{
   background:var(--cream);
   color:var(--ink);
@@ -199,7 +200,7 @@ em,.italic{font-style:italic;font-family:var(--serif)}
 .split{display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:clamp(30px,6vw,90px)}
 .split--alt{background:var(--cream-2)}
 .split__media{aspect-ratio:4/5;overflow:hidden;background:var(--cream)}
-.split__media img{width:100%;height:100%;object-fit:cover}
+.split__media img{width:100%;height:100%;object-fit:cover;object-position:center 22%}
 .split__body .eyebrow{display:block;margin-bottom:20px}
 .split__body h2{margin-bottom:24px}
 .split__body p{color:var(--ink-soft);margin-bottom:18px;max-width:48ch}
@@ -278,7 +279,7 @@ em,.italic{font-style:italic;font-family:var(--serif)}
   .hero{min-height:84vh}
   .products{grid-template-columns:repeat(2,1fr)}
   .split{grid-template-columns:1fr}
-  .split__media{order:-1;aspect-ratio:4/3}
+  .split__media{order:-1;aspect-ratio:4/5;max-height:70vh}
   .services{grid-template-columns:1fr}
   .service__img{aspect-ratio:16/10}
   .gallery{grid-template-columns:repeat(2,1fr);grid-auto-rows:46vw;gap:10px}
@@ -401,14 +402,14 @@ em,.italic{font-style:italic;font-family:var(--serif)}
     </nav>
 
     <a href="index.html" class="brand" aria-label="Abby Resnick — Floral Design, Los Angeles">
-      <img class="brand-logo" src="assets/brand/logo.svg" alt="Abby Resnick — Floral Design, Los Angeles">
+      <img loading="lazy" decoding="async" class="brand-logo" src="assets/brand/logo.svg" alt="Abby Resnick — Floral Design, Los Angeles">
     </a>
 
     <nav class="nav__links nav__links--right" aria-label="Secondary">
       <a href="#work">Portfolio</a>
       <a href="#studio">About</a>
       <a href="corporate.html" class="nav__corp">Corporate</a>
-      <a href="mailto:hello@abbyresnick.com">Inquire</a>
+      <a href="#inquire">Inquire</a>
     </nav>
 
     <button class="nav__toggle" aria-label="Open menu" aria-controls="mobileMenu" aria-expanded="false">
@@ -431,20 +432,20 @@ em,.italic{font-style:italic;font-family:var(--serif)}
     <a href="#work">Portfolio</a>
     <a href="#studio">About</a>
     <a href="corporate.html" class="is-corp">Corporate</a>
-    <a href="mailto:hello@abbyresnick.com">Inquire</a>
+    <a href="#inquire">Inquire</a>
   </nav>
 </div>
 
 <!-- 3) HERO -->
 <section class="hero">
-  <div class="hero__bg"><img src="assets/events/hero-sunset.jpg" alt="A candlelit hillside dinner table at sunset, styled with autumn florals and string lights"></div>
+  <div class="hero__bg"><img fetchpriority="high" decoding="async" src="assets/events/hero-sunset.jpg" alt="A candlelit hillside dinner table at sunset, styled with autumn florals and string lights"></div>
   <div class="hero__scrim"></div>
   <div class="hero__inner">
     <p class="eyebrow">Los Angeles Floral &amp; Event Design</p>
     <h1>Flowers for the moments you'll <em>remember</em></h1>
     <p class="hero__sub">Weddings, private celebrations, and brand events &mdash; gathered like a garden and styled by hand, room by room.</p>
     <div class="hero__cta">
-      <a href="mailto:hello@abbyresnick.com" class="btn btn--cream">Inquire</a>
+      <a href="#inquire" class="btn btn--cream">Inquire</a>
       <a href="#work" class="btn btn--light">View Portfolio</a>
     </div>
   </div>
@@ -507,14 +508,14 @@ em,.italic{font-style:italic;font-family:var(--serif)}
 
     <div class="verticals-feature">
       <article class="service reveal">
-        <div class="service__img"><img src="assets/events/card_weddings.jpg" alt="An elegant outdoor wedding reception table set with flowers"></div>
+        <div class="service__img"><img loading="lazy" decoding="async" src="assets/events/card_weddings.jpg" alt="An elegant outdoor wedding reception table set with flowers"></div>
         <h3>Weddings</h3>
         <p>From the first look to the last table, a garden-gathered celebration designed entirely around the two of you.</p>
         <a href="#services" class="link-underline">Explore weddings &rarr;</a>
       </article>
 
       <article class="service reveal">
-        <div class="service__img"><img src="assets/events/card_private.jpg" alt="A vibrant private celebration tablescape with abundant flowers"></div>
+        <div class="service__img"><img loading="lazy" decoding="async" src="assets/events/card_private.jpg" alt="A vibrant private celebration tablescape with abundant flowers"></div>
         <h3>Private Events</h3>
         <p>Anniversaries, engagements, showers, and intimate dinners &mdash; styled like a moment meant to be lingered over.</p>
         <a href="#services" class="link-underline">Explore private events &rarr;</a>
@@ -522,7 +523,7 @@ em,.italic{font-style:italic;font-family:var(--serif)}
     </div>
 
     <div class="vertical-wide reveal">
-      <div class="vertical-wide__img"><img src="assets/events/card_install.jpg" alt="A large suspended floral installation overhead"></div>
+      <div class="vertical-wide__img"><img loading="lazy" decoding="async" src="assets/events/card_install.jpg" alt="A large suspended floral installation overhead"></div>
       <div class="vertical-wide__body">
         <span class="eyebrow">Also</span>
         <h3>Installations &amp; Activations</h3>
@@ -543,10 +544,10 @@ em,.italic{font-style:italic;font-family:var(--serif)}
     </div>
 
     <div class="strip reveal">
-      <a href="#work"><img src="assets/events/g1.jpg" alt="Floral arrangement from a recent event"></a>
-      <a href="#work"><img src="assets/events/g2.jpg" alt="Styled event tablescape with flowers"></a>
-      <a href="#work"><img src="assets/events/g3.jpg" alt="Ceremony floral detail"></a>
-      <a href="#work"><img src="assets/events/g4.jpg" alt="Floral installation detail"></a>
+      <a href="#work"><img loading="lazy" decoding="async" src="assets/events/g1.jpg" alt="Floral arrangement from a recent event"></a>
+      <a href="#work"><img loading="lazy" decoding="async" src="assets/events/g2.jpg" alt="Styled event tablescape with flowers"></a>
+      <a href="#work"><img loading="lazy" decoding="async" src="assets/events/g3.jpg" alt="Ceremony floral detail"></a>
+      <a href="#work"><img loading="lazy" decoding="async" src="assets/events/g4.jpg" alt="Floral installation detail"></a>
     </div>
 
     <div class="center-cta reveal">
@@ -558,7 +559,7 @@ em,.italic{font-style:italic;font-family:var(--serif)}
 <!-- 7) STUDIO -->
 <section class="split split--alt" id="studio">
   <div class="split__media">
-    <img src="assets/events/portrait.jpg" alt="Abby Resnick holding a freshly gathered bouquet">
+    <img loading="lazy" decoding="async" src="assets/events/portrait.jpg" alt="Abby Resnick holding a freshly gathered bouquet">
   </div>
   <div class="split__body reveal">
     <p class="eyebrow">The Studio</p>
@@ -583,14 +584,126 @@ em,.italic{font-style:italic;font-family:var(--serif)}
      Do NOT re-add placeholder or sample quotes to the live site. -->
 
 <!-- 10) CLOSING CTA -->
-<section class="cta" id="inquire">
-  <img class="cta__bg" src="assets/events/g1.jpg" alt="Lush floral arrangement">
+<section class="cta">
+  <img loading="lazy" decoding="async" class="cta__bg" src="assets/events/g1.jpg" alt="Lush floral arrangement">
   <div class="cta__scrim"></div>
   <div class="wrap reveal">
     <p class="eyebrow">Let's Create Together</p>
     <h2>Planning something <em>beautiful</em>?</h2>
     <p>Tell us about your event, your date, and the feeling you're after &mdash; we would love to hear it.</p>
-    <a href="mailto:hello@abbyresnick.com" class="btn btn--light">Start an Inquiry</a>
+    <a href="#inquire" class="btn btn--light">Start an Inquiry</a>
+  </div>
+</section>
+
+<!-- 10b) INQUIRY FORM -->
+<style>
+.inq{background:var(--cream-2)}
+.inq .wrap{padding-top:clamp(64px,8vw,110px);padding-bottom:clamp(64px,8vw,110px)}
+.inq__head{text-align:center;max-width:600px;margin:0 auto clamp(34px,4vw,52px)}
+.inq__head .eyebrow{display:block;margin-bottom:14px}
+.inq__head p{color:var(--ink-soft);margin-top:14px}
+.inq__form{background:var(--paper);border:1px solid rgba(176,137,90,.22);
+  padding:clamp(26px,4vw,52px);max-width:820px;margin:0 auto}
+.inq__row{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.field{display:flex;flex-direction:column;margin-bottom:18px}
+.field label{font-family:var(--sans);font-weight:500;font-size:.68rem;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--ink-soft);margin-bottom:8px}
+.field input,.field select,.field textarea{font-family:var(--sans);font-weight:300;font-size:1rem;
+  color:var(--ink);background:var(--cream);border:1px solid rgba(176,137,90,.35);
+  padding:13px 14px;outline:none;transition:.25s ease;border-radius:0;width:100%;box-sizing:border-box}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--mauve);background:#fff}
+.field textarea{resize:vertical;min-height:130px}
+.field select{appearance:none;-webkit-appearance:none;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' fill='none' stroke='%235A2A42' stroke-width='1.4'/></svg>");
+  background-repeat:no-repeat;background-position:right 14px center;padding-right:34px}
+.inq__form .btn{width:100%;text-align:center;margin-top:6px;border:0;font-family:var(--sans)}
+.inq__note{text-align:center;font-size:.84rem;color:var(--ink-soft);margin-top:14px;line-height:1.6}
+@media(max-width:700px){.inq__row{grid-template-columns:1fr}}
+</style>
+
+<section class="inq" id="inquire">
+  <div class="wrap">
+    <div class="inq__head reveal">
+      <span class="eyebrow">Start an Inquiry</span>
+      <h2>Tell us about your <em>event</em></h2>
+      <p>Share a few details and we&rsquo;ll follow up personally to talk through the flowers, the setting, and what you&rsquo;re imagining.</p>
+    </div>
+
+    <!-- FORM ENDPOINT — replace ABBY_EMAIL with the destination address.
+         After the first (activation) submission, swap in FormSubmit's random
+         alias URL so the address is not exposed in public HTML. -->
+    <form class="inq__form reveal" action="https://formsubmit.co/abbyresnick@gmail.com" method="POST">
+      <input type="hidden" name="_subject" value="New event inquiry — abbyresnick.com">
+      <input type="hidden" name="_next" value="https://yoniversefilms.github.io/abbyresnick-site/thank-you.html">
+      <input type="hidden" name="_template" value="table">
+      <input type="hidden" name="_captcha" value="false">
+      <input type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px">
+
+      <div class="inq__row">
+        <div class="field">
+          <label for="iname">Your name</label>
+          <input type="text" id="iname" name="Name" required autocomplete="name">
+        </div>
+        <div class="field">
+          <label for="iemail">Email</label>
+          <input type="email" id="iemail" name="Email" required autocomplete="email">
+        </div>
+      </div>
+
+      <div class="inq__row">
+        <div class="field">
+          <label for="iphone">Phone <span style="text-transform:none;letter-spacing:0">(optional)</span></label>
+          <input type="tel" id="iphone" name="Phone" autocomplete="tel">
+        </div>
+        <div class="field">
+          <label for="itype">Event type</label>
+          <select id="itype" name="Event type">
+            <option>Wedding</option>
+            <option>Private celebration</option>
+            <option>Corporate or brand event</option>
+            <option>Installation</option>
+            <option>Something else</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="inq__row">
+        <div class="field">
+          <label for="idate">Event date</label>
+          <input type="date" id="idate" name="Event date">
+        </div>
+        <div class="field">
+          <label for="iloc">Venue or location</label>
+          <input type="text" id="iloc" name="Venue or location">
+        </div>
+      </div>
+
+      <div class="inq__row">
+        <div class="field">
+          <label for="iguests">Guest count <span style="text-transform:none;letter-spacing:0">(optional)</span></label>
+          <input type="number" id="iguests" name="Guest count" min="1" inputmode="numeric">
+        </div>
+        <div class="field">
+          <label for="ibudget">Budget range <span style="text-transform:none;letter-spacing:0">(optional)</span></label>
+          <select id="ibudget" name="Budget range">
+            <option value="">Prefer to discuss</option>
+            <option>Under $2,500</option>
+            <option>$2,500 &ndash; $5,000</option>
+            <option>$5,000 &ndash; $10,000</option>
+            <option>$10,000 &ndash; $25,000</option>
+            <option>$25,000+</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="imsg">Tell us about it</label>
+        <textarea id="imsg" name="Message" placeholder="The feeling you&rsquo;re after, colours you love, key moments &mdash; anything that helps us picture it."></textarea>
+      </div>
+
+      <button type="submit" class="btn">Send Inquiry</button>
+      <p class="inq__note">We read every inquiry personally and will be in touch soon.</p>
+    </form>
   </div>
 </section>
 
@@ -600,7 +713,7 @@ em,.italic{font-style:italic;font-family:var(--serif)}
     <div class="footer__top">
       <div class="footer__brand">
         <a href="index.html" class="brand" aria-label="Abby Resnick — Floral Design, Los Angeles">
-          <img class="brand-logo brand-logo--footer" src="assets/brand/logo-reverse.svg" alt="Abby Resnick — Floral Design, Los Angeles">
+          <img loading="lazy" decoding="async" class="brand-logo brand-logo--footer" src="assets/brand/logo-reverse.svg" alt="Abby Resnick — Floral Design, Los Angeles">
         </a>
         <p>Boutique floral and event design in Los Angeles &mdash; garden-gathered, designed by hand, styled like a moment.</p>
       </div>
@@ -630,7 +743,7 @@ em,.italic{font-style:italic;font-family:var(--serif)}
         <ul>
           <li>Los Angeles</li>
           <li>By appointment</li>
-          <li><a href="mailto:hello@abbyresnick.com">hello@abbyresnick.com</a></li>
+          <li><a href="#inquire">hello@abbyresnick.com</a></li>
           <li><a href="https://instagram.com/abbyresnickfloraldesign">@abbyresnickfloraldesign</a></li>
         </ul>
       </div>
