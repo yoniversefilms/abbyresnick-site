@@ -1,3 +1,6 @@
 .DS_Store
 *.log
 node_modules/
+
+# Portfolio knowledge base — internal only, real client names. Never commit.
+PORTFOLIO-SUMMARY.md
