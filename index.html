@@ -383,6 +383,7 @@ em,.italic{font-style:italic;font-family:var(--serif)}
   .announce{font-size:.64rem;letter-spacing:.12em}
   .announce .dot{margin:0 .35rem}
 }
+.cta img.cta__bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
 </style>
 
 <!-- 1) ANNOUNCE BAR -->
@@ -408,7 +409,7 @@ em,.italic{font-style:italic;font-family:var(--serif)}
     </a>
 
     <nav class="nav__links nav__links--right" aria-label="Secondary">
-      <a href="#work">Portfolio</a>
+      <a href="portfolio.html">Portfolio</a>
       <a href="#studio">About</a>
       <a href="corporate.html" class="nav__corp">Corporate</a>
       <a href="#inquire">Inquire</a>
@@ -431,7 +432,7 @@ em,.italic{font-style:italic;font-family:var(--serif)}
     <a href="#services">Weddings</a>
     <a href="#services">Private Events</a>
     <a href="#services">Installations</a>
-    <a href="#work">Portfolio</a>
+    <a href="portfolio.html">Portfolio</a>
     <a href="#studio">About</a>
     <a href="corporate.html" class="is-corp">Corporate</a>
     <a href="#inquire">Inquire</a>
@@ -448,7 +449,7 @@ em,.italic{font-style:italic;font-family:var(--serif)}
     <p class="hero__sub">Weddings, private celebrations, and brand events &mdash; gathered like a garden and styled by hand, room by room.</p>
     <div class="hero__cta">
       <a href="#inquire" class="btn btn--cream">Inquire</a>
-      <a href="#work" class="btn btn--light">View Portfolio</a>
+      <a href="portfolio.html" class="btn btn--light">View Portfolio</a>
     </div>
   </div>
 </section>
@@ -517,7 +518,7 @@ em,.italic{font-style:italic;font-family:var(--serif)}
       </article>
 
       <article class="service reveal">
-        <div class="service__img"><img loading="lazy" decoding="async" src="assets/events/card_private.jpg" alt="A vibrant private celebration tablescape with abundant flowers"></div>
+        <div class="service__img"><img loading="lazy" decoding="async" src="assets/portfolio/shower-table-vert-800.jpg" srcset="assets/portfolio/shower-table-vert-800.jpg 800w, assets/portfolio/shower-table-vert-1600.jpg 1600w" sizes="(max-width: 900px) 100vw, 33vw" alt="Long table, pink and lavender"></div>
         <h3>Private Events</h3>
         <p>Anniversaries, engagements, showers, and intimate dinners &mdash; styled like a moment meant to be lingered over.</p>
         <a href="#services" class="link-underline">Explore private events &rarr;</a>
@@ -525,7 +526,7 @@ em,.italic{font-style:italic;font-family:var(--serif)}
     </div>
 
     <div class="vertical-wide reveal">
-      <div class="vertical-wide__img"><img loading="lazy" decoding="async" src="assets/events/card_install.jpg" alt="A large suspended floral installation overhead"></div>
+      <div class="vertical-wide__img"><img loading="lazy" decoding="async" src="assets/portfolio/prop-arch-day2-1600.jpg" alt="Floral teepee arch on a Malibu clifftop"></div>
       <div class="vertical-wide__body">
         <span class="eyebrow">Also</span>
         <h3>Installations &amp; Activations</h3>
@@ -546,14 +547,14 @@ em,.italic{font-style:italic;font-family:var(--serif)}
     </div>
 
     <div class="strip reveal">
-      <a href="#work"><img loading="lazy" decoding="async" src="assets/events/g1.jpg" alt="Floral arrangement from a recent event"></a>
-      <a href="#work"><img loading="lazy" decoding="async" src="assets/events/g2.jpg" alt="Styled event tablescape with flowers"></a>
-      <a href="#work"><img loading="lazy" decoding="async" src="assets/events/g3.jpg" alt="Ceremony floral detail"></a>
-      <a href="#work"><img loading="lazy" decoding="async" src="assets/events/g4.jpg" alt="Floral installation detail"></a>
+      <a href="portfolio.html#item-prop-arch-day2"><img loading="lazy" decoding="async" src="assets/portfolio/prop-arch-day2-800.jpg" srcset="assets/portfolio/prop-arch-day2-800.jpg 800w, assets/portfolio/prop-arch-day2-1600.jpg 1600w" sizes="(max-width: 900px) 50vw, 25vw" alt="Floral teepee arch on a Malibu clifftop"></a>
+      <a href="portfolio.html#item-teq-table-wide"><img loading="lazy" decoding="async" src="assets/portfolio/teq-table-wide-800.jpg" srcset="assets/portfolio/teq-table-wide-800.jpg 800w, assets/portfolio/teq-table-wide-1600.jpg 1600w" sizes="(max-width: 900px) 50vw, 25vw" alt="Brand dinner tablescape by the pier"></a>
+      <a href="portfolio.html#item-shower-place"><img loading="lazy" decoding="async" src="assets/portfolio/shower-place-800.jpg" srcset="assets/portfolio/shower-place-800.jpg 800w, assets/portfolio/shower-place-1600.jpg 1600w" sizes="(max-width: 900px) 50vw, 25vw" alt="Place setting with garden roses"></a>
+      <a href="portfolio.html#item-v10"><img loading="lazy" decoding="async" src="assets/portfolio/v10-800.jpg" srcset="assets/portfolio/v10-800.jpg 800w, assets/portfolio/v10-1600.jpg 1600w" sizes="(max-width: 900px) 50vw, 25vw" alt="Blush bowl with pampas"></a>
     </div>
 
     <div class="center-cta reveal">
-      <a href="#work" class="link-underline">View the full portfolio &rarr;</a>
+      <a href="portfolio.html" class="link-underline">View the full portfolio &rarr;</a>
     </div>
   </div>
 </section>
@@ -586,7 +587,7 @@ em,.italic{font-style:italic;font-family:var(--serif)}
 
 <!-- 10) CLOSING CTA -->
 <section class="cta">
-  <img loading="lazy" decoding="async" class="cta__bg" src="assets/events/g1.jpg" alt="Lush floral arrangement">
+  <img loading="lazy" decoding="async" class="cta__bg" src="assets/portfolio/conservatory-1600.jpg" alt="Conservatory dinner, whites and baby&#x27;s breath">
   <div class="cta__scrim"></div>
   <div class="wrap reveal">
     <p class="eyebrow">Let's Create Together</p>
@@ -744,7 +745,7 @@ em,.italic{font-style:italic;font-family:var(--serif)}
           <li><a href="#services">Weddings</a></li>
           <li><a href="#services">Private Events</a></li>
           <li><a href="#services">Installations</a></li>
-          <li><a href="#work">Portfolio</a></li>
+          <li><a href="portfolio.html">Portfolio</a></li>
           <li><a href="#studio">About</a></li>
         </ul>
       </div>

@@ -45,3 +45,19 @@ template, disable the captcha, and include a `_honey` honeypot for spam.
 - [ ] Decide whether `hello@abbyresnick.com` forwards somewhere, or change the
       displayed address (it is shown on the site but may not receive mail yet)
 - [ ] Confirm a public phone number and any published pricing
+
+## Portfolio pipeline
+Images on `portfolio.html` (and the re-sourced homepage strip / corporate grid) are generated, never hand-edited.
+
+- Source of truth (private, outside this repo): the selects manifest and the photo archive on Yonatan's Mac.
+  The script has no built-in paths. Point it at them with the environment variables
+  `PORTFOLIO_SELECTS` (the selects JSON) and `PORTFOLIO_PHOTOS` (the archive root), or create
+  `scripts/portfolio-paths.json` as `{"selects": "/path/to/selects.json", "photos": "/path/to/Photos"}`.
+  That file is git-ignored and must never be committed; the environment variables win over it.
+- Build: `python3 scripts/portfolio-images.py` → writes `assets/portfolio/<id>-1600.jpg`, `<id>-800.jpg`,
+  `assets/portfolio/manifest.json`, and regenerates everything between `<!-- PORTFOLIO:START -->` and
+  `<!-- PORTFOLIO:END -->` in `portfolio.html`.
+- Verify: `python3 scripts/portfolio-images.py --check` (derivatives present, size budgets, no private paths, no stale links).
+- Tests: `python3 -m unittest scripts.test_portfolio_images` and `node --test 'scripts/*.test.js'`.
+- To change what's shown: edit the private manifest, rebuild, commit the regenerated files.
+- Rule: florals and decor only; Abby is the only person who appears.
