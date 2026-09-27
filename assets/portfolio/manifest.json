@@ -1,0 +1,786 @@
+[
+ {
+  "id": "prop-setup-day",
+  "category": "installations",
+  "caption": "Clifftop proposal setup, before sunset",
+  "alt": "Clifftop proposal setup, before sunset",
+  "w": 1128,
+  "h": 1600
+ },
+ {
+  "id": "shower-waterfall",
+  "category": "installations",
+  "caption": "Roses along the waterfall edge",
+  "alt": "Roses along the waterfall edge",
+  "w": 1600,
+  "h": 1069
+ },
+ {
+  "id": "shower-wall",
+  "category": "installations",
+  "caption": "Florals climbing a pink garden wall",
+  "alt": "Florals climbing a pink garden wall",
+  "w": 1600,
+  "h": 1069
+ },
+ {
+  "id": "shower-arch",
+  "category": "installations",
+  "caption": "Balloon and floral arch",
+  "alt": "Balloon and floral arch",
+  "w": 1600,
+  "h": 1069
+ },
+ {
+  "id": "tall-centerpiece",
+  "category": "installations",
+  "caption": "Elevated centerpiece over gold chargers",
+  "alt": "Elevated centerpiece over gold chargers",
+  "w": 1200,
+  "h": 1600
+ },
+ {
+  "id": "teq-table-wide",
+  "category": "corporate",
+  "caption": "Brand dinner tablescape by the pier",
+  "alt": "Brand dinner tablescape by the pier",
+  "w": 1600,
+  "h": 1063
+ },
+ {
+  "id": "teq-table-vert",
+  "category": "corporate",
+  "caption": "Long table, white ranunculus and anemone",
+  "alt": "Long table, white ranunculus and anemone",
+  "w": 1600,
+  "h": 1063
+ },
+ {
+  "id": "teq-bottle",
+  "category": "corporate",
+  "caption": "Product placement within the florals",
+  "alt": "Product placement within the florals",
+  "w": 1600,
+  "h": 1063
+ },
+ {
+  "id": "teq-arrangement",
+  "category": "corporate",
+  "caption": "Centerpiece detail",
+  "alt": "Centerpiece detail",
+  "w": 1600,
+  "h": 1063
+ },
+ {
+  "id": "teq-budvases-vert",
+  "category": "corporate",
+  "caption": "Bud vases down the runner",
+  "alt": "Bud vases down the runner",
+  "w": 1063,
+  "h": 1600
+ },
+ {
+  "id": "teq-budvase-row",
+  "category": "corporate",
+  "caption": "Bud vase trio",
+  "alt": "Bud vase trio",
+  "w": 1600,
+  "h": 1063
+ },
+ {
+  "id": "teq-styling",
+  "category": "corporate",
+  "caption": "Styling the table on site",
+  "alt": "Styling the table on site",
+  "w": 1600,
+  "h": 1063
+ },
+ {
+  "id": "shower-place",
+  "category": "private",
+  "caption": "Place setting with garden roses",
+  "alt": "Place setting with garden roses",
+  "w": 1600,
+  "h": 1069
+ },
+ {
+  "id": "shower-table-vert",
+  "category": "private",
+  "caption": "Long table, pink and lavender",
+  "alt": "Long table, pink and lavender",
+  "w": 1272,
+  "h": 1600
+ },
+ {
+  "id": "shower-table-wide",
+  "category": "private",
+  "caption": "Poolside table, full length",
+  "alt": "Poolside table, full length",
+  "w": 1600,
+  "h": 1069
+ },
+ {
+  "id": "shower-dessert",
+  "category": "private",
+  "caption": "Dessert table under the arch",
+  "alt": "Dessert table under the arch",
+  "w": 1069,
+  "h": 1600
+ },
+ {
+  "id": "ranch-row",
+  "category": "private",
+  "caption": "Picnic tables in the hills",
+  "alt": "Picnic tables in the hills",
+  "w": 1600,
+  "h": 1067
+ },
+ {
+  "id": "ranch-close",
+  "category": "private",
+  "caption": "Wildflower centerpiece",
+  "alt": "Wildflower centerpiece",
+  "w": 1600,
+  "h": 1067
+ },
+ {
+  "id": "ranch-2023",
+  "category": "private",
+  "caption": "Ranch lunch, spring palette",
+  "alt": "Ranch lunch, spring palette",
+  "w": 1600,
+  "h": 1200
+ },
+ {
+  "id": "blue-arrangement",
+  "category": "private",
+  "caption": "Delphinium and garden roses",
+  "alt": "Delphinium and garden roses",
+  "w": 1600,
+  "h": 1067
+ },
+ {
+  "id": "conservatory",
+  "category": "private",
+  "caption": "Conservatory dinner, whites and baby's breath",
+  "alt": "Conservatory dinner, whites and baby's breath",
+  "w": 1125,
+  "h": 1277
+ },
+ {
+  "id": "peach-table",
+  "category": "private",
+  "caption": "Peach tablescape from above",
+  "alt": "Peach tablescape from above",
+  "w": 1200,
+  "h": 1600
+ },
+ {
+  "id": "orchid-room",
+  "category": "private",
+  "caption": "Orchids for a dining room",
+  "alt": "Orchids for a dining room",
+  "w": 1600,
+  "h": 1200
+ },
+ {
+  "id": "doorway",
+  "category": "private",
+  "caption": "Vivid arrangement at the door",
+  "alt": "Vivid arrangement at the door",
+  "w": 1600,
+  "h": 1200
+ },
+ {
+  "id": "entry-wall",
+  "category": "private",
+  "caption": "Entry arrangement",
+  "alt": "Entry arrangement",
+  "w": 795,
+  "h": 993
+ },
+ {
+  "id": "autumn",
+  "category": "private",
+  "caption": "Autumn centerpiece",
+  "alt": "Autumn centerpiece",
+  "w": 768,
+  "h": 1024
+ },
+ {
+  "id": "lounge-white",
+  "category": "private",
+  "caption": "Whites for a lounge",
+  "alt": "Whites for a lounge",
+  "w": 1600,
+  "h": 1200
+ },
+ {
+  "id": "candle-table",
+  "category": "private",
+  "caption": "Candlelit dinner",
+  "alt": "Candlelit dinner",
+  "w": 1600,
+  "h": 1200
+ },
+ {
+  "id": "anemone-dark",
+  "category": "studio",
+  "caption": "Black anthurium and anemone",
+  "alt": "Black anthurium and anemone",
+  "w": 1600,
+  "h": 1600
+ },
+ {
+  "id": "studio-pink",
+  "category": "studio",
+  "caption": "Blush and coral, studio",
+  "alt": "Blush and coral, studio",
+  "w": 1125,
+  "h": 694
+ },
+ {
+  "id": "studio-pastel",
+  "category": "studio",
+  "caption": "Purple anemone and anthurium, studio",
+  "alt": "Purple anemone and anthurium, studio",
+  "w": 1125,
+  "h": 717
+ },
+ {
+  "id": "tall-pink",
+  "category": "studio",
+  "caption": "Peony and delphinium, elevated",
+  "alt": "Peony and delphinium, elevated",
+  "w": 1183,
+  "h": 1600
+ },
+ {
+  "id": "v01",
+  "category": "studio",
+  "caption": "Ranunculus, pampas, dark anemone",
+  "alt": "Ranunculus, pampas, dark anemone",
+  "w": 1600,
+  "h": 1080
+ },
+ {
+  "id": "v01-detail",
+  "category": "studio",
+  "caption": "Detail",
+  "alt": "Detail",
+  "w": 1600,
+  "h": 1067
+ },
+ {
+  "id": "v02",
+  "category": "studio",
+  "caption": "Lavender and blush compote",
+  "alt": "Lavender and blush compote",
+  "w": 1600,
+  "h": 1080
+ },
+ {
+  "id": "v02-detail",
+  "category": "studio",
+  "caption": "Detail",
+  "alt": "Detail",
+  "w": 1600,
+  "h": 1067
+ },
+ {
+  "id": "v03",
+  "category": "studio",
+  "caption": "Pampas and ranunculus",
+  "alt": "Pampas and ranunculus",
+  "w": 1600,
+  "h": 1080
+ },
+ {
+  "id": "v04",
+  "category": "studio",
+  "caption": "Urn with cherry branches",
+  "alt": "Urn with cherry branches",
+  "w": 1600,
+  "h": 1150
+ },
+ {
+  "id": "v05",
+  "category": "studio",
+  "caption": "Urn, blush and berry",
+  "alt": "Urn, blush and berry",
+  "w": 1600,
+  "h": 1080
+ },
+ {
+  "id": "v06",
+  "category": "studio",
+  "caption": "Urn with blossom branches",
+  "alt": "Urn with blossom branches",
+  "w": 1600,
+  "h": 1080
+ },
+ {
+  "id": "v06-detail",
+  "category": "studio",
+  "caption": "Detail",
+  "alt": "Detail",
+  "w": 1600,
+  "h": 1067
+ },
+ {
+  "id": "v07",
+  "category": "studio",
+  "caption": "Purple anemone and anthurium",
+  "alt": "Purple anemone and anthurium",
+  "w": 1600,
+  "h": 1080
+ },
+ {
+  "id": "v07-detail",
+  "category": "studio",
+  "caption": "Detail",
+  "alt": "Detail",
+  "w": 1600,
+  "h": 1067
+ },
+ {
+  "id": "v08",
+  "category": "studio",
+  "caption": "Orchids and pampas, white vase",
+  "alt": "Orchids and pampas, white vase",
+  "w": 1131,
+  "h": 1600
+ },
+ {
+  "id": "v09",
+  "category": "studio",
+  "caption": "Coral and red urn",
+  "alt": "Coral and red urn",
+  "w": 1600,
+  "h": 1080
+ },
+ {
+  "id": "v09-vert",
+  "category": "studio",
+  "caption": "Coral urn, vertical",
+  "alt": "Coral urn, vertical",
+  "w": 1131,
+  "h": 1600
+ },
+ {
+  "id": "v09-detail",
+  "category": "studio",
+  "caption": "Detail",
+  "alt": "Detail",
+  "w": 1600,
+  "h": 1067
+ },
+ {
+  "id": "v10",
+  "category": "studio",
+  "caption": "Blush bowl with pampas",
+  "alt": "Blush bowl with pampas",
+  "w": 1600,
+  "h": 1080
+ },
+ {
+  "id": "v10-detail",
+  "category": "studio",
+  "caption": "Detail",
+  "alt": "Detail",
+  "w": 1600,
+  "h": 1067
+ },
+ {
+  "id": "v11",
+  "category": "studio",
+  "caption": "Peach bowl",
+  "alt": "Peach bowl",
+  "w": 1600,
+  "h": 1080
+ },
+ {
+  "id": "v11-roses",
+  "category": "studio",
+  "caption": "Roses, close",
+  "alt": "Roses, close",
+  "w": 1600,
+  "h": 1067
+ },
+ {
+  "id": "v12",
+  "category": "studio",
+  "caption": "Blush compote",
+  "alt": "Blush compote",
+  "w": 1600,
+  "h": 1080
+ },
+ {
+  "id": "v12-detail",
+  "category": "studio",
+  "caption": "Detail",
+  "alt": "Detail",
+  "w": 1600,
+  "h": 1067
+ },
+ {
+  "id": "v13",
+  "category": "studio",
+  "caption": "Anemone and rose pot",
+  "alt": "Anemone and rose pot",
+  "w": 1600,
+  "h": 1080
+ },
+ {
+  "id": "v13-detail",
+  "category": "studio",
+  "caption": "Detail",
+  "alt": "Detail",
+  "w": 1067,
+  "h": 1600
+ },
+ {
+  "id": "v14",
+  "category": "studio",
+  "caption": "Anthurium and peach",
+  "alt": "Anthurium and peach",
+  "w": 1600,
+  "h": 982
+ },
+ {
+  "id": "v14-detail",
+  "category": "studio",
+  "caption": "Detail",
+  "alt": "Detail",
+  "w": 1600,
+  "h": 1067
+ },
+ {
+  "id": "v15",
+  "category": "studio",
+  "caption": "Pink anthurium pot",
+  "alt": "Pink anthurium pot",
+  "w": 1600,
+  "h": 1080
+ },
+ {
+  "id": "v15-overhead",
+  "category": "studio",
+  "caption": "Overhead, on black",
+  "alt": "Overhead, on black",
+  "w": 1600,
+  "h": 974
+ },
+ {
+  "id": "gate",
+  "category": "private",
+  "caption": "Welcome arrangement at the gate",
+  "alt": "Welcome arrangement at the gate",
+  "w": 1200,
+  "h": 1600
+ },
+ {
+  "id": "showroom-2",
+  "category": "studio",
+  "caption": "Showroom styling",
+  "alt": "Showroom styling",
+  "w": 1600,
+  "h": 1200
+ },
+ {
+  "id": "prop-arch-day2",
+  "category": "installations",
+  "caption": "Floral teepee arch on a Malibu clifftop",
+  "alt": "Floral teepee arch on a Malibu clifftop",
+  "w": 1600,
+  "h": 1067
+ },
+ {
+  "id": "v01-b",
+  "category": "studio",
+  "caption": "Ranunculus, pampas, dark anemone, second angle",
+  "alt": "Ranunculus, pampas, dark anemone, second angle",
+  "w": 1600,
+  "h": 1080
+ },
+ {
+  "id": "v02-vert",
+  "category": "studio",
+  "caption": "Lavender and blush compote, vertical",
+  "alt": "Lavender and blush compote, vertical",
+  "w": 1131,
+  "h": 1600
+ },
+ {
+  "id": "v04-b",
+  "category": "studio",
+  "caption": "Urn with cherry branches, second angle",
+  "alt": "Urn with cherry branches, second angle",
+  "w": 1600,
+  "h": 1114
+ },
+ {
+  "id": "v07-anthurium",
+  "category": "studio",
+  "caption": "Anthurium and anemone detail",
+  "alt": "Anthurium and anemone detail",
+  "w": 1600,
+  "h": 1067
+ },
+ {
+  "id": "v07-b",
+  "category": "studio",
+  "caption": "Purple anemone and anthurium, second angle",
+  "alt": "Purple anemone and anthurium, second angle",
+  "w": 1600,
+  "h": 1080
+ },
+ {
+  "id": "v07-orchid",
+  "category": "studio",
+  "caption": "Orchid and anemone detail",
+  "alt": "Orchid and anemone detail",
+  "w": 1600,
+  "h": 1067
+ },
+ {
+  "id": "v08-close",
+  "category": "studio",
+  "caption": "Orchids and pampas, close",
+  "alt": "Orchids and pampas, close",
+  "w": 1067,
+  "h": 1600
+ },
+ {
+  "id": "v08-detail2",
+  "category": "studio",
+  "caption": "Orchid detail",
+  "alt": "Orchid detail",
+  "w": 1067,
+  "h": 1600
+ },
+ {
+  "id": "v09-dahlia",
+  "category": "studio",
+  "caption": "Coral urn with dahlias, vertical",
+  "alt": "Coral urn with dahlias, vertical",
+  "w": 1131,
+  "h": 1600
+ },
+ {
+  "id": "v10-vert",
+  "category": "studio",
+  "caption": "Blush bowl with pampas, vertical",
+  "alt": "Blush bowl with pampas, vertical",
+  "w": 1055,
+  "h": 1600
+ },
+ {
+  "id": "v11-vert",
+  "category": "studio",
+  "caption": "Peach bowl, vertical",
+  "alt": "Peach bowl, vertical",
+  "w": 1055,
+  "h": 1600
+ },
+ {
+  "id": "v12-vert",
+  "category": "studio",
+  "caption": "Blush compote, vertical",
+  "alt": "Blush compote, vertical",
+  "w": 1131,
+  "h": 1600
+ },
+ {
+  "id": "v13-vert",
+  "category": "studio",
+  "caption": "Anemone and rose pot, vertical",
+  "alt": "Anemone and rose pot, vertical",
+  "w": 1131,
+  "h": 1600
+ },
+ {
+  "id": "v13-detail2",
+  "category": "studio",
+  "caption": "Anemone and ranunculus, close",
+  "alt": "Anemone and ranunculus, close",
+  "w": 1067,
+  "h": 1600
+ },
+ {
+  "id": "v14-b",
+  "category": "studio",
+  "caption": "Anthurium and peach, second angle",
+  "alt": "Anthurium and peach, second angle",
+  "w": 1600,
+  "h": 982
+ },
+ {
+  "id": "v14-detail2",
+  "category": "studio",
+  "caption": "Peach detail",
+  "alt": "Peach detail",
+  "w": 1600,
+  "h": 1067
+ },
+ {
+  "id": "v15-b",
+  "category": "studio",
+  "caption": "Overhead on black, second frame",
+  "alt": "Overhead on black, second frame",
+  "w": 1600,
+  "h": 974
+ },
+ {
+  "id": "studio-3",
+  "category": "studio",
+  "caption": "Blush and white, studio",
+  "alt": "Blush and white, studio",
+  "w": 1125,
+  "h": 701
+ },
+ {
+  "id": "sh-table-vert2",
+  "category": "private",
+  "caption": "Long table, pink and lavender, second angle",
+  "alt": "Long table, pink and lavender, second angle",
+  "w": 1168,
+  "h": 1600
+ },
+ {
+  "id": "sh-table-arch",
+  "category": "private",
+  "caption": "Table setting with the balloon arch behind",
+  "alt": "Table setting with the balloon arch behind",
+  "w": 1069,
+  "h": 1600
+ },
+ {
+  "id": "sh-waterfall2",
+  "category": "installations",
+  "caption": "Garden roses at the waterfall edge",
+  "alt": "Garden roses at the waterfall edge",
+  "w": 1600,
+  "h": 1069
+ },
+ {
+  "id": "sh-waterfall-vert",
+  "category": "installations",
+  "caption": "Waterfall florals, vertical",
+  "alt": "Waterfall florals, vertical",
+  "w": 1069,
+  "h": 1600
+ },
+ {
+  "id": "sh-overhead",
+  "category": "private",
+  "caption": "Poolside table from above",
+  "alt": "Poolside table from above",
+  "w": 1600,
+  "h": 1092
+ },
+ {
+  "id": "sh-pool2",
+  "category": "installations",
+  "caption": "Mirrored spheres on the pool, afternoon light",
+  "alt": "Mirrored spheres on the pool, afternoon light",
+  "w": 1600,
+  "h": 1069
+ },
+ {
+  "id": "sh-cupcakes",
+  "category": "private",
+  "caption": "Cupcake tower with garden roses",
+  "alt": "Cupcake tower with garden roses",
+  "w": 1069,
+  "h": 1600
+ },
+ {
+  "id": "teq-wide2",
+  "category": "corporate",
+  "caption": "Brand dinner tablescape, second angle",
+  "alt": "Brand dinner tablescape, second angle",
+  "w": 1600,
+  "h": 1063
+ },
+ {
+  "id": "teq-vert2",
+  "category": "corporate",
+  "caption": "Centerpiece by the window",
+  "alt": "Centerpiece by the window",
+  "w": 1063,
+  "h": 1600
+ },
+ {
+  "id": "teq-anemone",
+  "category": "corporate",
+  "caption": "Anemone detail",
+  "alt": "Anemone detail",
+  "w": 1063,
+  "h": 1600
+ },
+ {
+  "id": "teq-detail2",
+  "category": "corporate",
+  "caption": "Napkin and centerpiece",
+  "alt": "Napkin and centerpiece",
+  "w": 1063,
+  "h": 1600
+ },
+ {
+  "id": "teq-detail3",
+  "category": "corporate",
+  "caption": "Bud vase and menu card",
+  "alt": "Bud vase and menu card",
+  "w": 1063,
+  "h": 1600
+ },
+ {
+  "id": "teq-budvase-vert2",
+  "category": "corporate",
+  "caption": "Centerpiece at dusk, vertical",
+  "alt": "Centerpiece at dusk, vertical",
+  "w": 1063,
+  "h": 1600
+ },
+ {
+  "id": "teq-table-vert2",
+  "category": "corporate",
+  "caption": "Long table, second angle",
+  "alt": "Long table, second angle",
+  "w": 1208,
+  "h": 1600
+ },
+ {
+  "id": "teq-ocean",
+  "category": "corporate",
+  "caption": "Bud vase with the ocean behind",
+  "alt": "Bud vase with the ocean behind",
+  "w": 1063,
+  "h": 1600
+ },
+ {
+  "id": "ranch-2015-wide",
+  "category": "private",
+  "caption": "Picnic tables in the hills, second angle",
+  "alt": "Picnic tables in the hills, second angle",
+  "w": 1600,
+  "h": 1067
+ },
+ {
+  "id": "ranch-2015-close",
+  "category": "private",
+  "caption": "Wildflower centerpiece, second angle",
+  "alt": "Wildflower centerpiece, second angle",
+  "w": 1600,
+  "h": 1067
+ },
+ {
+  "id": "ranch-2023b",
+  "category": "private",
+  "caption": "Ranch lunch, second angle",
+  "alt": "Ranch lunch, second angle",
+  "w": 1600,
+  "h": 1200
+ }
+]
