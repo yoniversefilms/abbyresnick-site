@@ -133,6 +133,12 @@ body.sheet-open .sheet{transform:none;visibility:visible;transition:transform .3
   .bar{display:grid;grid-template-columns:1fr auto 1fr;padding-top:0}
   .rec{position:static;transform:none;gap:2px} .rec-btn{width:46px;height:46px} .right{position:static}
 }
+/* ---- while recording: the bar tucks away, only the stop button + timer float ---- */
+body.recording .stage{bottom:0}
+body.recording .bar{background:transparent;border-top:0;height:auto;padding:0;pointer-events:none}
+body.recording .tabs,body.recording .right{display:none}
+body.recording .rec{position:fixed;left:50%;bottom:calc(var(--safe) + 16px);transform:translateX(-50%);pointer-events:auto;min-width:0;gap:4px;
+  padding:8px 14px 7px;border-radius:999px;background:rgba(245,239,226,.94);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);box-shadow:0 8px 26px rgba(58,42,48,.24)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -565,7 +571,7 @@ body.sheet-open .sheet{transform:none;visibility:visible;transition:transform .3
 
   /* ---------- tour ---------- */
   var STEPS = [
-    { target: 'tabs', step: 'Step 1 of 3', h: 'Pick a <em>page.</em>', p: 'The real website is above. Switch between Home, Corporate and Portfolio here any time — even in the middle of a note.' },
+    { target: 'tabs', step: 'Step 1 of 3', h: 'Pick a <em>page.</em>', p: 'The real website is above. Switch between Home, Corporate and Portfolio here. While you record, this bar tucks away so you can see more — the site’s own links still work.' },
     { target: 'rec-wrap', step: 'Step 2 of 3', h: 'Tap to <em>record.</em>', p: 'Then scroll and talk, as if Yonatan were sitting next to you. Tap again to stop — every stop saves one note and sends it to him. Record as many as you like.' },
     { target: 'open-notes', step: 'Step 3 of 3', h: 'Your <em>notes</em> live here.', p: 'Listen back, delete a take, and see that each one reached Yonatan.' }
   ];
