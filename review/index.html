@@ -201,9 +201,11 @@ body.sheet-open .sheet{transform:none;visibility:visible;transition:transform .3
 <script>
 (function () {
   'use strict';
-  /* Where finished notes are sent (a Google Apps Script web app that saves into Yonatan's Drive — see
-     scripts/review-upload.gs). Empty = no automatic upload; the Notes sheet offers share/download instead. */
-  var UPLOAD_URL = '';
+  /* Where finished notes are sent: the `site-note` endpoint (a private storage bucket, one folder per client).
+     No key lives here — the endpoint validates and files each note itself. The page probes it on load; if it
+     doesn't answer ok, the Notes sheet offers share/download instead, so the page never dead-ends. */
+  var UPLOAD_URL = 'https://nxwtlebvkthvxodsadtn.supabase.co/functions/v1/site-note';
+  var CLIENT = 'abby';
 
   var R = window.Review;
   var $ = function (id) { return document.getElementById(id); };
@@ -211,11 +213,25 @@ body.sheet-open .sheet{transform:none;visibility:visible;transition:transform .3
   var countEl = $('count'), list = $('list'), meta = $('meta'), sendBtn = $('send'), clearBtn = $('clear'), footNote = $('foot-note');
   var hint = $('hint'), hintText = $('hint-text'), welcome = $('welcome'), sheet = $('sheet'), stage = $('stage'), bar = document.querySelector('.bar');
   var supported = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder);
-  var hasEndpoint = /^https:\/\//.test(UPLOAD_URL);
-  var UPLOAD_TIMEOUT = 120000;
-  $('lead-auto').hidden = !hasEndpoint; $('lead-manual').hidden = hasEndpoint;
+  var hasEndpoint = false, UPLOAD_TIMEOUT = 120000;
+  function paintMode() {
+    $('lead-auto').hidden = !hasEndpoint; $('lead-manual').hidden = hasEndpoint;
+    if (document.body.classList.contains('sheet-open')) renderList();
+  }
+  /* Is the endpoint live? (A GET that answers {ok:true}.) Remembered across loads so the copy is right at once. */
+  function probeEndpoint() {
+    if (!/^https:\/\//.test(UPLOAD_URL)) return Promise.resolve(false);
+    var ctrl = typeof AbortController === 'function' ? new AbortController() : null;
+    var kill = setTimeout(function () { if (ctrl) ctrl.abort(); }, 8000);
+    return fetch(UPLOAD_URL, ctrl ? { signal: ctrl.signal } : {}).then(function (r) { return r.json(); }).then(function (j) {
+      clearTimeout(kill); var live = !!(j && j.ok);
+      if (live !== hasEndpoint) { hasEndpoint = live; lsSet('abby-review-endpoint', live ? '1' : '0'); paintMode(); }
+      return live;
+    }).catch(function () { clearTimeout(kill); return hasEndpoint; });
+  }
   function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
   function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  hasEndpoint = lsGet('abby-review-endpoint') === '1'; $('lead-auto').hidden = !hasEndpoint; $('lead-manual').hidden = hasEndpoint;
 
   /* ---------- storage (IndexedDB) ----------
      `clips`  = finished notes (audio as ArrayBuffer so Private Browsing can store it).
@@ -395,7 +411,8 @@ body.sheet-open .sheet{transform:none;visibility:visible;transition:transform .3
     var ctrl = typeof AbortController === 'function' ? new AbortController() : null;
     var kill = setTimeout(function () { if (ctrl) ctrl.abort(); }, UPLOAD_TIMEOUT);
     return toBase64(clip.blob).then(function (b64) {
-      var opts = { method: 'POST', body: JSON.stringify(R.uploadPayload(clip, b64)) };
+      var payload = R.uploadPayload(clip, b64); payload.client = CLIENT;
+      var opts = { method: 'POST', body: JSON.stringify(payload) };
       if (ctrl) opts.signal = ctrl.signal;
       return fetch(UPLOAD_URL, opts);
     }).then(function (r) { return r.json(); }).then(function (j) {
@@ -411,7 +428,7 @@ body.sheet-open .sheet{transform:none;visibility:visible;transition:transform .3
     });
   }
   function uploadPending(byHand) { clips.forEach(function (c) { if (!c.uploaded) upload(c, byHand); }); }
-  window.addEventListener('online', function () { uploadPending(false); });
+  window.addEventListener('online', function () { probeEndpoint().then(function () { uploadPending(false); }); });
 
   /* ---------- notes sheet ---------- */
   function renderCount() { countEl.textContent = String(clips.length); $('open-notes').setAttribute('aria-label', 'Your notes, ' + clips.length); }
@@ -552,11 +569,11 @@ body.sheet-open .sheet{transform:none;visibility:visible;transition:transform .3
     { target: 'rec-wrap', step: 'Step 2 of 3', h: 'Tap to <em>record.</em>', p: 'Then scroll and talk, as if Yonatan were sitting next to you. Tap again to stop — every stop saves one note and sends it to him. Record as many as you like.' },
     { target: 'open-notes', step: 'Step 3 of 3', h: 'Your <em>notes</em> live here.', p: 'Listen back, delete a take, and see that each one reached Yonatan.' }
   ];
-  if (!hasEndpoint) { STEPS[1].p = 'Then scroll and talk, as if Yonatan were sitting next to you. Tap again to stop — every stop saves one note. Record as many as you like.'; STEPS[2].p = 'Listen back, delete a take, and when you’re done, send them all to Yonatan with one tap.'; }
+  var STEPS_MANUAL = { 1: 'Then scroll and talk, as if Yonatan were sitting next to you. Tap again to stop — every stop saves one note. Record as many as you like.', 2: 'Listen back, delete a take, and when you’re done, send them all to Yonatan with one tap.' };
   var tour = $('tour'), spot = $('spot'), coach = $('coach'), tourI = 0;
   function placeStep() {
     var st = STEPS[tourI], el = $(st.target), r = el.getBoundingClientRect(), pad = 8;
-    $('coach-step').textContent = st.step; $('coach-h').innerHTML = st.h; $('coach-p').textContent = st.p;
+    $('coach-step').textContent = st.step; $('coach-h').innerHTML = st.h; $('coach-p').textContent = (!hasEndpoint && STEPS_MANUAL[tourI]) || st.p;
     $('coach-next').textContent = tourI === STEPS.length - 1 ? 'Got it' : 'Next';
     spot.style.left = (r.left - pad) + 'px'; spot.style.top = (r.top - pad) + 'px';
     spot.style.width = (r.width + pad * 2) + 'px'; spot.style.height = (r.height + pad * 2) + 'px';
@@ -605,8 +622,8 @@ body.sheet-open .sheet{transform:none;visibility:visible;transition:transform .3
   }
   loadAll().then(function (rows) { clips = (rows || []).map(fromRow).filter(Boolean); renderCount(); return recover(); }).then(function (n) {
     if (n) { renderCount(); showHint(n === 1 ? 'Recovered the note you were recording — it’s in your notes.' : 'Recovered ' + n + ' notes you were recording.', 5000); }
-    uploadPending(false);
-  }).catch(function () {});
+    return probeEndpoint();
+  }).then(function () { uploadPending(false); }).catch(function () {});
   function begin() {
     welcome.style.opacity = '0';
     setTimeout(function () { welcome.hidden = true; startTour(); }, 400);
