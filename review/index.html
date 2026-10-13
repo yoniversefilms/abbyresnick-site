@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="data:,">
+<title>Site review — Abby Resnick Floral Design</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#F5EFE2; --paper:#FBF7EE; --ink:#3A2A30; --ink-soft:#76675F;
+  --mauve:#5A2A42; --lavender:#B9A7D0; --lavender-deep:#8A74A8; --gold:#B0895A; --gold-deep:#8C6A3F; --rec:#B4453C; --ok:#4F7A5B;
+  --serif:'Cormorant Garamond',Georgia,serif;
+  --sans:'Jost',-apple-system,Segoe UI,sans-serif;
+  --bar:92px; --safe:env(safe-area-inset-bottom,0px); --safe-l:env(safe-area-inset-left,0px); --safe-r:env(safe-area-inset-right,0px);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{background:var(--cream);color:var(--ink);font-family:var(--sans);font-weight:300;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+button:focus-visible,a:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+[hidden]{display:none!important}
+
+/* ---- the site, framed ---- */
+.stage{position:fixed;inset:0;bottom:calc(var(--bar) + var(--safe));overflow:auto;-webkit-overflow-scrolling:touch;background:var(--paper)}
+.stage iframe{display:block;border:0;width:1px;min-width:100%;height:100%;min-height:100%}
+.hint{position:fixed;left:0;right:0;top:0;display:flex;justify-content:center;pointer-events:none;z-index:4}
+.hint span{pointer-events:auto;margin:10px 16px 0;background:rgba(58,42,48,.9);color:var(--cream);font-size:.8rem;letter-spacing:.04em;line-height:1.5;text-align:center;
+  padding:9px 16px;border-radius:18px;backdrop-filter:blur(6px);opacity:0;transform:translateY(-6px);transition:.3s ease}
+.hint.show span{opacity:1;transform:none}
+
+/* ---- bottom bar ---- */
+.bar{position:fixed;left:0;right:0;bottom:0;height:calc(var(--bar) + var(--safe));padding:0 calc(14px + var(--safe-r)) var(--safe) calc(14px + var(--safe-l));z-index:5;
+  background:var(--cream);border-top:1px solid rgba(90,42,66,.14);display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px}
+.tabs{display:flex;gap:2px;flex-wrap:wrap}
+.tab{font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;font-weight:500;color:var(--ink-soft);min-height:44px;padding:0 12px;border-radius:999px;border:1px solid transparent;transition:.25s}
+.tab[aria-selected="true"]{color:var(--mauve);border-color:var(--mauve)}
+.rec{display:flex;flex-direction:column;align-items:center;gap:5px;min-width:112px;padding:4px 10px;border-radius:16px}
+.rec-btn{width:62px;height:62px;border-radius:50%;background:var(--mauve);display:grid;place-items:center;position:relative;transition:.3s ease;box-shadow:0 6px 18px rgba(90,42,66,.25)}
+.rec-btn::before{content:"";width:22px;height:22px;border-radius:50%;background:var(--cream);transition:.3s ease}
+.rec-btn[disabled]{opacity:.45;cursor:default;transform:none}
+body.recording .rec-btn{background:var(--rec);animation:pulse 1.6s ease-out infinite}
+body.recording .rec-btn::before{border-radius:4px;width:20px;height:20px}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(180,69,60,.45)}100%{box-shadow:0 0 0 18px rgba(180,69,60,0)}}
+.rec-label{font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);font-weight:500;font-variant-numeric:tabular-nums}
+body.recording .rec-label{color:var(--rec)}
+.right{display:flex;justify-content:flex-end;align-items:center;gap:6px}
+.notes-btn{display:flex;align-items:center;gap:8px;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;font-weight:500;color:var(--mauve);min-height:44px;padding:0 14px;border:1px solid var(--mauve);border-radius:999px;transition:.25s}
+.notes-btn .n{position:relative;display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:var(--mauve);color:var(--cream);font-size:.68rem}
+body.has-failed .notes-btn .n::after{content:"";position:absolute;top:-3px;right:-3px;width:9px;height:9px;border-radius:50%;background:var(--rec);border:2px solid var(--cream)}
+@media (hover:hover){
+  .tab:hover{color:var(--mauve)}
+  .rec-btn:hover{transform:scale(1.04)}
+  .notes-btn:hover{background:var(--mauve);color:var(--cream)}
+  .notes-btn:hover .n{background:var(--cream);color:var(--mauve)}
+  .del:hover{color:var(--rec)}
+  .btn:hover{background:var(--ink);border-color:var(--ink)}
+}
+
+/* ---- notes sheet ---- */
+.scrim{position:fixed;inset:0;background:rgba(58,42,48,.35);opacity:0;pointer-events:none;transition:.3s;z-index:6}
+.sheet{position:fixed;left:0;right:0;bottom:0;max-height:82vh;max-height:82dvh;background:var(--paper);border-radius:22px 22px 0 0;z-index:7;
+  transform:translateY(110%);visibility:hidden;transition:transform .38s cubic-bezier(.2,.8,.2,1),visibility 0s .38s;display:flex;flex-direction:column;box-shadow:0 -14px 40px rgba(58,42,48,.18);padding-bottom:var(--safe)}
+body.sheet-open .scrim{opacity:1;pointer-events:auto}
+body.sheet-open .sheet{transform:none;visibility:visible;transition:transform .38s cubic-bezier(.2,.8,.2,1),visibility 0s}
+.sheet-head{display:flex;align-items:baseline;justify-content:space-between;padding:22px 24px 10px;gap:12px}
+.sheet-head h2{font-family:var(--serif);font-weight:500;color:var(--mauve);font-size:1.7rem;line-height:1}
+.sheet-head h2 em{font-style:italic;color:var(--lavender-deep)}
+.sheet-head .meta{font-size:.74rem;letter-spacing:.08em;color:var(--ink-soft)}
+.close{font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;font-weight:500;color:var(--ink-soft);min-height:44px;padding:0 12px;margin-right:-12px}
+.list{overflow:auto;padding:4px 24px 12px;flex:1}
+.clip{display:grid;grid-template-columns:1fr auto;gap:6px 14px;align-items:center;padding:12px 0;border-top:1px solid rgba(90,42,66,.12)}
+.clip:first-child{border-top:0}
+.clip .lbl{font-size:.92rem;color:var(--ink)}
+.clip .lbl small{display:block;color:var(--ink-soft);font-size:.74rem;letter-spacing:.05em;margin-top:2px}
+.clip .st{display:inline-block;font-size:.7rem;letter-spacing:.08em;margin-top:4px;color:var(--ink-soft)}
+.clip .st.ok{color:var(--ok)} .clip .st.bad{color:var(--rec)}
+.clip audio{grid-column:1 / -1;width:100%;height:36px}
+.del{font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);min-height:44px;padding:0 0 0 12px}
+.empty{padding:30px 0 20px;color:var(--ink-soft);text-align:center;line-height:1.7}
+.sheet-foot{padding:14px 24px 18px;border-top:1px solid rgba(90,42,66,.12);display:flex;flex-direction:column;gap:8px}
+.btn{display:inline-flex;justify-content:center;align-items:center;gap:10px;font-weight:500;font-size:.74rem;letter-spacing:.2em;text-transform:uppercase;padding:16px 26px;
+  border:1px solid var(--mauve);background:var(--mauve);color:var(--cream);transition:.3s ease;width:100%}
+.btn[disabled]{opacity:.45;cursor:default}
+.btn.ghost{background:transparent;color:var(--mauve)}
+.foot-note{font-size:.78rem;color:var(--ink-soft);text-align:center;line-height:1.6}
+.foot-note a{display:inline-block;color:var(--mauve);text-decoration:underline;text-underline-offset:3px;padding:12px 8px}
+
+/* ---- welcome ---- */
+.welcome{position:fixed;inset:0;z-index:9;background:var(--cream);display:flex;align-items:center;justify-content:center;text-align:center;padding:clamp(22px,5vw,80px);overflow:auto;transition:opacity .4s}
+.welcome .logo{height:56px;width:auto;margin:0 auto 38px;display:block}
+.rule{width:52px;height:1px;background:var(--gold);margin:0 auto 30px}
+.welcome h1{font-family:var(--serif);font-weight:500;color:var(--mauve);font-size:clamp(2.1rem,5vw,3.2rem);line-height:1.1;margin-bottom:18px}
+.welcome h1 em{font-style:italic;color:var(--lavender-deep)}
+.welcome .lead{color:var(--ink-soft);font-size:1.05rem;line-height:1.75;max-width:44ch;margin:0 auto 30px}
+.welcome .btn{width:auto}
+.welcome .fine{margin-top:18px;font-size:.8rem;color:var(--ink-soft);line-height:1.6;max-width:44ch;margin-left:auto;margin-right:auto}
+.unsupported{color:var(--rec);margin-top:16px;font-size:.9rem;max-width:40ch;margin-left:auto;margin-right:auto;line-height:1.6}
+
+/* ---- tour ---- */
+.tour{position:fixed;inset:0;z-index:8}
+.spot{position:fixed;border-radius:999px;box-shadow:0 0 0 9999px rgba(58,42,48,.62);pointer-events:none;transition:all .4s cubic-bezier(.2,.8,.2,1);outline:2px solid var(--cream);outline-offset:2px}
+.coach{position:fixed;left:16px;right:16px;max-width:400px;margin:0 auto;background:var(--paper);border-radius:18px;padding:20px 22px 18px;box-shadow:0 18px 50px rgba(58,42,48,.3);transition:all .4s cubic-bezier(.2,.8,.2,1);max-height:calc(100vh - 32px);overflow:auto}
+.coach::after{content:"";position:absolute;left:var(--arrow-x,50%);bottom:-9px;width:18px;height:18px;background:var(--paper);transform:translateX(-50%) rotate(45deg);border-radius:3px}
+.coach .step{font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold-deep);font-weight:500;margin-bottom:8px}
+.coach h3{font-family:var(--serif);font-weight:500;color:var(--mauve);font-size:1.55rem;line-height:1.1;margin-bottom:8px}
+.coach h3 em{font-style:italic;color:var(--lavender-deep)}
+.coach p{color:var(--ink-soft);font-size:.98rem;line-height:1.65;margin-bottom:14px}
+.coach-actions{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.coach .skip{font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;font-weight:500;color:var(--ink-soft);min-height:44px;padding:0 10px;margin-left:-10px}
+.btn.small{width:auto;padding:13px 22px}
+
+@media (min-width:641px){
+  .sheet{left:50%;right:auto;width:min(560px,calc(100vw - 32px));transform:translate(-50%,110%);border-radius:22px 22px 0 0}
+  body.sheet-open .sheet{transform:translate(-50%,0)}
+}
+@media (max-width:640px){
+  :root{--bar:128px}
+  .bar{display:block;padding-top:6px}
+  .tabs{justify-content:center;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{padding:0 10px;font-size:.66rem;white-space:nowrap}
+  .rec{position:absolute;left:50%;bottom:calc(var(--safe) + 6px);transform:translateX(-50%);min-width:0;gap:3px}
+  .rec-btn{width:54px;height:54px}
+  .right{position:absolute;right:calc(14px + var(--safe-r));bottom:calc(var(--safe) + 20px)}
+  .notes-btn{padding:0 12px;font-size:.66rem;gap:6px}
+}
+@media (max-height:420px){
+  :root{--bar:84px}
+  .bar{display:grid;grid-template-columns:1fr auto 1fr;padding-top:0}
+  .rec{position:static;transform:none;gap:2px} .rec-btn{width:46px;height:46px} .right{position:static}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<section class="welcome" id="welcome" aria-labelledby="wh">
+  <div>
+    <img class="logo" src="/assets/brand/logo.svg" alt="Abby Resnick — Floral Design, Los Angeles">
+    <div class="rule"></div>
+    <h1 id="wh">Walk the site, <em>say what you see.</em></h1>
+    <p class="lead">This is the live website with a voice recorder underneath. Talk through it as you scroll &mdash; what to change, what you love, what&rsquo;s missing. <span id="lead-auto" hidden>Every note is sent to Yonatan automatically.</span><span id="lead-manual">When you&rsquo;re done, send your notes to Yonatan from the Notes button.</span></p>
+    <button class="btn" id="start" type="button">Show me around</button>
+    <p class="fine">Takes 20 seconds. Your browser will ask to use the microphone the first time you record. Links inside the site work as usual &mdash; the tabs at the bottom bring you back.</p>
+    <p class="unsupported" id="unsupported" hidden>This browser can&rsquo;t record audio. Please open this link in Safari (iPhone) or Chrome.</p>
+  </div>
+</section>
+
+<div class="stage" id="stage">
+  <iframe id="frame" title="abbyresnick.com" src="about:blank"></iframe>
+</div>
+<div class="hint" id="hint" aria-live="polite"><span id="hint-text"></span></div>
+
+<nav class="bar" aria-label="Review controls">
+  <div class="tabs" role="tablist" id="tabs"></div>
+  <div class="rec" id="rec-wrap">
+    <button class="rec-btn" id="rec" type="button" aria-label="Start recording" aria-pressed="false"></button>
+    <span class="rec-label" id="rec-label" aria-hidden="true">Record</span>
+  </div>
+  <div class="right">
+    <button class="notes-btn" id="open-notes" type="button" aria-label="Your notes"><span class="t">Notes</span><span class="n" id="count">0</span></button>
+  </div>
+</nav>
+
+<div class="scrim" id="scrim"></div>
+<section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sh" inert>
+  <div class="sheet-head">
+    <div>
+      <h2 id="sh">Your <em>notes</em></h2>
+      <div class="meta" id="meta"></div>
+    </div>
+    <button class="close" id="close" type="button">Close</button>
+  </div>
+  <div class="list" id="list"></div>
+  <div class="sheet-foot">
+    <button class="btn" id="send" type="button">Send to Yonatan</button>
+    <button class="btn ghost" id="clear" type="button" hidden>Clear sent notes</button>
+    <p class="foot-note" id="foot-note"></p>
+    <p class="foot-note"><a href="#" id="replay-tour">Show the tour again</a></p>
+  </div>
+</section>
+
+<div class="tour" id="tour" hidden>
+  <div class="spot" id="spot"></div>
+  <div class="coach" id="coach" role="dialog" aria-modal="true" aria-live="polite" aria-labelledby="coach-h" tabindex="-1">
+    <div class="step" id="coach-step"></div>
+    <h3 id="coach-h"></h3>
+    <p id="coach-p"></p>
+    <div class="coach-actions">
+      <button class="skip" id="coach-skip" type="button">Skip</button>
+      <button class="btn small" id="coach-next" type="button">Next</button>
+    </div>
+  </div>
+</div>
+
+<script src="/assets/js/review.js"></script>
+<script>
+(function () {
+  'use strict';
+  /* Where finished notes are sent (a Google Apps Script web app that saves into Yonatan's Drive — see
+     scripts/review-upload.gs). Empty = no automatic upload; the Notes sheet offers share/download instead. */
+  var UPLOAD_URL = '';
+
+  var R = window.Review;
+  var $ = function (id) { return document.getElementById(id); };
+  var frame = $('frame'), tabs = $('tabs'), recBtn = $('rec'), recLabel = $('rec-label');
+  var countEl = $('count'), list = $('list'), meta = $('meta'), sendBtn = $('send'), clearBtn = $('clear'), footNote = $('foot-note');
+  var hint = $('hint'), hintText = $('hint-text'), welcome = $('welcome'), sheet = $('sheet'), stage = $('stage'), bar = document.querySelector('.bar');
+  var supported = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder);
+  var hasEndpoint = /^https:\/\//.test(UPLOAD_URL);
+  var UPLOAD_TIMEOUT = 120000;
+  $('lead-auto').hidden = !hasEndpoint; $('lead-manual').hidden = hasEndpoint;
+  function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+
+  /* ---------- storage (IndexedDB) ----------
+     `clips`  = finished notes (audio as ArrayBuffer so Private Browsing can store it).
+     `chunks` = the note in progress, one row per second of audio, so a reload or a dropped tab
+                mid-note is recovered on the next load instead of lost. */
+  var DB = 'abby-review', STORE = 'clips', CHUNKS = 'chunks', dbp = null;
+  function db() {
+    if (dbp) return dbp;
+    dbp = new Promise(function (res, rej) {
+      if (!window.indexedDB) return rej(new Error('no indexedDB'));
+      var req = indexedDB.open(DB, 2);
+      req.onupgradeneeded = function () {
+        var d = req.result;
+        if (!d.objectStoreNames.contains(STORE)) d.createObjectStore(STORE, { keyPath: 'id' });
+        if (!d.objectStoreNames.contains(CHUNKS)) d.createObjectStore(CHUNKS, { keyPath: 'key' });
+      };
+      req.onsuccess = function () { res(req.result); };
+      req.onerror = function () { rej(req.error); };
+      req.onblocked = function () { rej(new Error('blocked')); };
+    });
+    return dbp;
+  }
+  function tx(store, mode, fn) {
+    return db().then(function (d) {
+      return new Promise(function (res, rej) {
+        var t = d.transaction(store, mode), s = t.objectStore(store), out = fn(s);
+        t.oncomplete = function () { res(out && out.result !== undefined ? out.result : out); };
+        t.onerror = function () { rej(t.error); };
+        t.onabort = function () { rej(t.error || new Error('aborted')); };
+      });
+    });
+  }
+  function toRow(clip) {
+    return { id: clip.id, pages: clip.pages, startedAt: clip.startedAt, durationMs: clip.durationMs, mime: clip.mime, size: clip.size,
+      uploaded: !!clip.uploaded, buf: clip.buf };
+  }
+  function fromRow(row) {
+    if (!row || !row.buf) return null;
+    row.blob = new Blob([row.buf], { type: row.mime || '' });
+    row.page = row.pages && row.pages[0];
+    return row;
+  }
+  var loadAll = function () { return tx(STORE, 'readonly', function (s) { return s.getAll(); }); };
+  var save = function (clip) { return tx(STORE, 'readwrite', function (s) { s.put(toRow(clip)); return clip; }); };
+  var remove = function (id) { return tx(STORE, 'readwrite', function (s) { s.delete(id); }); };
+  var putChunk = function (row) { return tx(CHUNKS, 'readwrite', function (s) { s.put(row); }); };
+  var loadChunks = function () { return tx(CHUNKS, 'readonly', function (s) { return s.getAll(); }); };
+  var clearChunks = function (clipId) {
+    return tx(CHUNKS, 'readwrite', function (s) {
+      var range = IDBKeyRange.bound(clipId + ':', clipId + ':\uffff');
+      s.delete(range);
+    });
+  };
+  function chunkKey(clipId, seq) { return clipId + ':c' + ('000000' + seq).slice(-6); }
+
+  /* ---------- state ---------- */
+  var clips = [], page = R.PAGES[0].key, urls = {}, revokeTimer = null;
+  var recorder = null, stream = null, chunks = [], startedAt = 0, timer = null, visited = [], afterStop = null, seq = 0;
+
+  function showHint(text, ms) {
+    hintText.textContent = text; hint.classList.add('show');
+    clearTimeout(showHint.t); showHint.t = setTimeout(function () { hint.classList.remove('show'); }, ms || 2600);
+  }
+  function paintBadge() { document.body.classList.toggle('has-failed', clips.some(function (c) { return c.failed; })); }
+
+  /* ---------- tabs / frame ---------- */
+  function renderTabs() {
+    tabs.innerHTML = '';
+    R.PAGES.forEach(function (p) {
+      var b = document.createElement('button');
+      b.className = 'tab'; b.type = 'button'; b.setAttribute('role', 'tab'); b.textContent = p.label;
+      b.setAttribute('aria-selected', String(p.key === page));
+      b.addEventListener('click', function () { setPage(p.key, true); });
+      tabs.appendChild(b);
+    });
+  }
+  function setPage(key, navigate) {
+    page = R.pageByKey(key).key;
+    if (navigate) frame.src = R.pageByKey(page).src;
+    lsSet('abby-review-page', page);
+    renderTabs();
+    if (recorder && visited[visited.length - 1] !== page) {
+      visited.push(page); showHint('Still recording — now on ' + R.pageByKey(page).label);
+      putChunk({ key: String(startedAt) + ':meta', clipId: String(startedAt), pages: visited.slice(), startedAt: startedAt, mime: recorder.mimeType || '' }).catch(function () {});
+    }
+  }
+  /* The site links to itself (nav, hero, footer). Keep the tabs and the note's page list in step. */
+  frame.addEventListener('load', function () {
+    var path = null;
+    try { path = frame.contentWindow.location.pathname; } catch (e) { path = null; }
+    if (path === null || path === 'blank') return;
+    var key = R.pathToPage(path);
+    if (key && key !== page) setPage(key, false);
+  });
+
+  /* ---------- recording ---------- */
+  function tick() { recLabel.textContent = R.fmtDuration(Date.now() - startedAt); }
+  function startRec() {
+    if (recorder || recBtn.disabled) return;
+    recBtn.disabled = true;
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(function (s) {
+      stream = s; chunks = [];
+      var mime = R.pickMime(function (m) { return MediaRecorder.isTypeSupported(m); });
+      recorder = mime ? new MediaRecorder(s, { mimeType: mime }) : new MediaRecorder(s);
+      startedAt = Date.now(); visited = [page]; seq = 0;
+      var clipId = String(startedAt);
+      recorder.ondataavailable = function (e) {
+        if (!e.data || !e.data.size) return;
+        chunks.push(e.data);
+        var n = seq++;
+        e.data.arrayBuffer().then(function (buf) { return putChunk({ key: chunkKey(clipId, n), clipId: clipId, seq: n, at: Date.now(), buf: buf }); }).catch(function () {});
+      };
+      recorder.onstop = finishRec;
+      recorder.onerror = function () { finishRec(); };
+      recorder.start(1000);
+      putChunk({ key: clipId + ':meta', clipId: clipId, pages: visited.slice(), startedAt: startedAt, mime: recorder.mimeType || mime }).catch(function () {});
+      document.body.classList.add('recording');
+      recBtn.setAttribute('aria-pressed', 'true'); recBtn.setAttribute('aria-label', 'Stop recording');
+      tick(); timer = setInterval(tick, 500);
+      recBtn.disabled = false;
+      showHint('Recording · talk as you scroll');
+    }).catch(function (err) {
+      recBtn.disabled = false;
+      var denied = err && (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError');
+      showHint(!denied ? 'Couldn’t start the microphone. Try again.' : R.isIOS(navigator)
+        ? 'Microphone blocked. Tap “AA” in the address bar → Website Settings → Microphone → Allow.'
+        : 'Microphone blocked. Allow it for this site in your browser’s site settings, then try again.', 7000);
+    });
+  }
+  function stopRec(then) {
+    if (then) afterStop = then;
+    if (!recorder || recorder.state === 'inactive') { if (afterStop) { var f = afterStop; afterStop = null; f(); } return; }
+    recBtn.disabled = true;
+    try { recorder.stop(); } catch (e) { finishRec(); }
+  }
+  function finishRec() {
+    clearInterval(timer);
+    var rec = recorder; recorder = null;
+    var mime = (rec && rec.mimeType) || (chunks[0] && chunks[0].type) || '';
+    var blob = new Blob(chunks, { type: mime }), pages = visited.slice();
+    var clip = { id: String(startedAt), pages: pages, page: pages[0], startedAt: startedAt, durationMs: Date.now() - startedAt, mime: mime, size: blob.size, blob: blob, uploaded: false };
+    if (stream) { stream.getTracks().forEach(function (t) { t.stop(); }); stream = null; }
+    chunks = []; visited = [];
+    document.body.classList.remove('recording');
+    recBtn.setAttribute('aria-pressed', 'false'); recBtn.setAttribute('aria-label', 'Start recording');
+    recLabel.textContent = 'Record';
+    recBtn.disabled = false;
+    var done = function () { if (afterStop) { var f = afterStop; afterStop = null; f(); } };
+    if (clip.durationMs < 700 || !clip.size) { showHint('Too short — hold the thought a little longer.'); clearChunks(clip.id).catch(function () {}); done(); return; }
+    blob.arrayBuffer().then(function (buf) { clip.buf = buf; return save(clip); }).then(function () {
+      clips.push(clip); renderCount();
+      showHint('Saved · ' + R.fmtDuration(clip.durationMs) + ' on ' + R.pagesLabel(clip.pages));
+      return clearChunks(clip.id).catch(function () {});
+    }).catch(function () {
+      clips.push(clip); renderCount();
+      showHint(hasEndpoint && navigator.onLine ? 'Saved · sending to Yonatan now.' : 'Saved for this visit only — keep this page open until your notes are sent.', 5000);
+    }).then(function () { upload(clip); done(); });
+  }
+  recBtn.addEventListener('click', function () { if (recorder) stopRec(); else startRec(); });
+  /* iOS drops background tabs without beforeunload; save the note the moment the page goes away. */
+  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'hidden' && recorder) stopRec(); });
+  window.addEventListener('pagehide', function () { if (recorder) stopRec(); });
+
+  /* ---------- upload (automatic; retried on load and by hand) ---------- */
+  function toBase64(blob) {
+    return new Promise(function (res, rej) {
+      var fr = new FileReader();
+      fr.onload = function () { res(String(fr.result).split(',')[1] || ''); };
+      fr.onerror = function () { rej(fr.error); };
+      fr.readAsDataURL(blob);
+    });
+  }
+  function upload(clip, byHand) {
+    if (!hasEndpoint || clip.uploaded || clip.uploading || clip.rejected) return Promise.resolve(false);
+    if (!navigator.onLine) { if (byHand) showHint('You’re offline — your notes will go to Yonatan as soon as you’re back online.', 5000); return Promise.resolve(false); }
+    clip.uploading = true; clip.failed = false; paintStatus(clip); paintBadge();
+    var ctrl = typeof AbortController === 'function' ? new AbortController() : null;
+    var kill = setTimeout(function () { if (ctrl) ctrl.abort(); }, UPLOAD_TIMEOUT);
+    return toBase64(clip.blob).then(function (b64) {
+      var opts = { method: 'POST', body: JSON.stringify(R.uploadPayload(clip, b64)) };
+      if (ctrl) opts.signal = ctrl.signal;
+      return fetch(UPLOAD_URL, opts);
+    }).then(function (r) { return r.json(); }).then(function (j) {
+      if (j && j.ok === false && j.error === 'too large') { clip.rejected = true; }
+      if (!j || !j.ok) throw new Error((j && j.error) || 'upload rejected');
+      clip.uploaded = true; clip.uploading = false;
+      return save(clip).catch(function () {});
+    }).then(function () { clearTimeout(kill); paintStatus(clip); paintBadge(); return true; }).catch(function () {
+      clearTimeout(kill); clip.uploading = false; clip.failed = true; paintStatus(clip); paintBadge();
+      if (clip.rejected) { showHint('That note is too long to send automatically — use the share button below it instead.', 7000); return false; }
+      if (!upload.warned || byHand) { upload.warned = true; showHint('Couldn’t send that note to Yonatan yet. It’s saved here and will be sent again automatically.', 6000); }
+      return false;
+    });
+  }
+  function uploadPending(byHand) { clips.forEach(function (c) { if (!c.uploaded) upload(c, byHand); }); }
+  window.addEventListener('online', function () { uploadPending(false); });
+
+  /* ---------- notes sheet ---------- */
+  function renderCount() { countEl.textContent = String(clips.length); $('open-notes').setAttribute('aria-label', 'Your notes, ' + clips.length); }
+  function urlFor(clip) {
+    if (!urls[clip.id]) urls[clip.id] = URL.createObjectURL(clip.blob);
+    return urls[clip.id];
+  }
+  function revokeAll() { Object.keys(urls).forEach(function (k) { URL.revokeObjectURL(urls[k]); }); urls = {}; }
+  function paintStatus(clip) {
+    var el = list.querySelector('[data-id="' + clip.id + '"] .st');
+    if (el) { el.textContent = R.statusText(clip, hasEndpoint); el.className = 'st' + (clip.uploaded ? ' ok' : clip.failed ? ' bad' : ''); }
+    paintFoot();
+  }
+  function paintFoot() {
+    var pending = clips.filter(function (c) { return !c.uploaded; }), sent = clips.length - pending.length;
+    if (hasEndpoint) {
+      var sending = clips.some(function (c) { return c.uploading; });
+      sendBtn.hidden = !pending.length; sendBtn.disabled = sending;
+      sendBtn.textContent = sending ? 'Sending…' : (pending.length === 1 ? 'Send the note again' : 'Send ' + pending.length + ' notes again');
+      clearBtn.hidden = !sent;
+      footNote.textContent = !clips.length ? '' : !pending.length ? 'All notes are with Yonatan. You can clear them from this phone whenever you like.'
+        : sending ? 'Sending to Yonatan…' : 'Some notes haven’t reached Yonatan yet — check your connection and tap to send again.';
+    } else {
+      var canShare = R.canShareFiles(navigator, filesFor());
+      sendBtn.hidden = false; sendBtn.disabled = !clips.length; clearBtn.hidden = !sent;
+      sendBtn.textContent = (canShare ? 'Send to Yonatan' : 'Download notes') + (sent && pending.length && pending.length < clips.length ? ' (' + pending.length + ' new)' : '');
+      footNote.textContent = !clips.length ? '' : canShare
+        ? 'Opens your share sheet — pick Messages, WhatsApp or Mail and send to Yonatan.'
+        : 'Saves the audio files to this device. Then attach them to a message or email to Yonatan.';
+    }
+  }
+  function renderList() {
+    list.innerHTML = '';
+    clips.sort(function (a, b) { return a.startedAt - b.startedAt; });
+    if (!clips.length) list.innerHTML = '<p class="empty">No notes yet.<br>Close this, tap record, and talk through the page.</p>';
+    clips.forEach(function (c, i) {
+      var row = document.createElement('div'); row.className = 'clip'; row.setAttribute('data-id', c.id);
+      var lbl = document.createElement('div'); lbl.className = 'lbl';
+      lbl.innerHTML = '<span></span><small></small><span class="st"></span>';
+      lbl.children[0].textContent = (i + 1) + '. ' + R.pagesLabel(c.pages);
+      lbl.children[1].textContent = R.fmtClock(c.startedAt) + ' · ' + R.fmtDuration(c.durationMs) + ' · ' + R.fmtBytes(c.size);
+      lbl.children[2].textContent = R.statusText(c, hasEndpoint);
+      lbl.children[2].className = 'st' + (c.uploaded ? ' ok' : c.failed ? ' bad' : '');
+      var del = document.createElement('button'); del.className = 'del'; del.type = 'button'; del.textContent = 'Delete';
+      del.setAttribute('aria-label', 'Delete note ' + (i + 1));
+      del.addEventListener('click', function () {
+        if (!confirm('Delete this note? This can’t be undone.')) return;
+        remove(c.id).then(function () {
+          clips = clips.filter(function (x) { return x.id !== c.id; });
+          if (urls[c.id]) { URL.revokeObjectURL(urls[c.id]); delete urls[c.id]; }
+          renderCount(); renderList();
+        }).catch(function () { showHint('Couldn’t delete that note. Try again.'); });
+      });
+      var audio = document.createElement('audio'); audio.controls = true; audio.preload = 'metadata'; audio.src = urlFor(c);
+      row.appendChild(lbl); row.appendChild(del); row.appendChild(audio);
+      list.appendChild(row);
+    });
+    meta.textContent = clips.length ? clips.length + (clips.length === 1 ? ' note · ' : ' notes · ') + R.fmtBytes(R.totalBytes(clips)) : '';
+    paintFoot();
+  }
+  function filesFor() {
+    return clips.map(function (c, i) {
+      try { return new File([c.blob], R.clipName(c), { type: c.mime || 'application/octet-stream' }); } catch (e) { return null; }
+    }).filter(Boolean);
+  }
+  var lastFocus = null;
+  function openSheet() {
+    clearTimeout(revokeTimer);
+    renderList();
+    lastFocus = document.activeElement;
+    document.body.classList.add('sheet-open'); sheet.removeAttribute('inert');
+    stage.setAttribute('inert', ''); bar.setAttribute('inert', '');
+    $('close').focus();
+  }
+  function closeSheet() {
+    if (!document.body.classList.contains('sheet-open')) return;
+    document.body.classList.remove('sheet-open'); sheet.setAttribute('inert', '');
+    if ($('tour').hidden) { stage.removeAttribute('inert'); bar.removeAttribute('inert'); }
+    list.querySelectorAll('audio').forEach(function (a) { a.pause(); });
+    revokeTimer = setTimeout(revokeAll, 450);
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  $('open-notes').addEventListener('click', function () { if (recorder) stopRec(openSheet); else openSheet(); });
+  $('close').addEventListener('click', closeSheet);
+  $('scrim').addEventListener('click', closeSheet);
+  function trapTab(e, root) {
+    var f = root.querySelectorAll('button:not([disabled]):not([hidden]),a[href],audio[controls],[tabindex]:not([tabindex="-1"])');
+    if (!f.length) return;
+    var first = f[0], last = f[f.length - 1];
+    if (e.shiftKey && (document.activeElement === first || document.activeElement === root)) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  }
+  document.addEventListener('keydown', function (e) {
+    var sheetOpen = document.body.classList.contains('sheet-open'), tourOpen = !$('tour').hidden;
+    if (e.key === 'Escape') { if (sheetOpen) closeSheet(); else if (tourOpen) endTour(); return; }
+    if (e.key === 'Tab') { if (sheetOpen) trapTab(e, sheet); else if (tourOpen) trapTab(e, $('coach')); }
+  });
+
+  sendBtn.addEventListener('click', function () {
+    if (hasEndpoint) { clips.forEach(function (c) { c.failed = false; }); uploadPending(true); paintFoot(); paintBadge(); return; }
+    var pending = clips.filter(function (c) { return !c.uploaded; }), batchClips = pending.length ? pending : clips.slice();
+    var files = batchClips.map(function (c) { try { return new File([c.blob], R.clipName(c), { type: c.mime || 'application/octet-stream' }); } catch (e) { return null; } }).filter(Boolean);
+    if (!files.length) return;
+    if (R.canShareFiles(navigator, files)) {
+      var batch = batchClips;
+      navigator.share({ files: files, title: 'Site notes — Abby', text: R.shareText(batch) }).then(function () {
+        batch.forEach(function (c) { c.uploaded = true; save(c).catch(function () {}); });
+        showHint('Sent · thank you!', 4000); renderList();
+      }).catch(function (err) {
+        if (err && err.name === 'AbortError') return;        // she closed the share sheet
+        downloadAll(files);
+      });
+    } else downloadAll(files);
+  });
+  clearBtn.addEventListener('click', function () {
+    var sent = clips.filter(function (c) { return c.uploaded; });
+    if (!sent.length || !confirm('Remove ' + (sent.length === 1 ? 'the sent note' : 'the ' + sent.length + ' sent notes') + ' from this device? Yonatan already has them.')) return;
+    Promise.all(sent.map(function (c) { return remove(c.id).catch(function () {}); })).then(function () {
+      clips = clips.filter(function (c) { return !c.uploaded; });
+      renderCount(); renderList();
+    });
+  });
+  function downloadAll(files) {
+    files.forEach(function (f, i) {
+      setTimeout(function () {
+        var a = document.createElement('a'); a.href = URL.createObjectURL(f); a.download = f.name;
+        document.body.appendChild(a); a.click();
+        setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 4000);
+      }, i * 350);
+    });
+    footNote.textContent = files.length === 1 ? '1 file saved to your downloads. Attach it to a message or email to Yonatan.'
+      : files.length + ' files saved to your downloads. Attach them to a message or email to Yonatan.';
+  }
+
+  /* ---------- tour ---------- */
+  var STEPS = [
+    { target: 'tabs', step: 'Step 1 of 3', h: 'Pick a <em>page.</em>', p: 'The real website is above. Switch between Home, Corporate and Portfolio here any time — even in the middle of a note.' },
+    { target: 'rec-wrap', step: 'Step 2 of 3', h: 'Tap to <em>record.</em>', p: 'Then scroll and talk, as if Yonatan were sitting next to you. Tap again to stop — every stop saves one note and sends it to him. Record as many as you like.' },
+    { target: 'open-notes', step: 'Step 3 of 3', h: 'Your <em>notes</em> live here.', p: 'Listen back, delete a take, and see that each one reached Yonatan.' }
+  ];
+  if (!hasEndpoint) { STEPS[1].p = 'Then scroll and talk, as if Yonatan were sitting next to you. Tap again to stop — every stop saves one note. Record as many as you like.'; STEPS[2].p = 'Listen back, delete a take, and when you’re done, send them all to Yonatan with one tap.'; }
+  var tour = $('tour'), spot = $('spot'), coach = $('coach'), tourI = 0;
+  function placeStep() {
+    var st = STEPS[tourI], el = $(st.target), r = el.getBoundingClientRect(), pad = 8;
+    $('coach-step').textContent = st.step; $('coach-h').innerHTML = st.h; $('coach-p').textContent = st.p;
+    $('coach-next').textContent = tourI === STEPS.length - 1 ? 'Got it' : 'Next';
+    spot.style.left = (r.left - pad) + 'px'; spot.style.top = (r.top - pad) + 'px';
+    spot.style.width = (r.width + pad * 2) + 'px'; spot.style.height = (r.height + pad * 2) + 'px';
+    spot.style.borderRadius = (st.target === 'rec-wrap' ? 22 : 14) + 'px';
+    var cx = r.left + r.width / 2, cw = coach.offsetWidth, left;
+    if (window.innerWidth > 640) {
+      left = Math.min(Math.max(cx - cw / 2, 16), window.innerWidth - cw - 16);
+      coach.style.right = 'auto'; coach.style.left = left + 'px';
+    } else { coach.style.left = ''; coach.style.right = ''; left = 16; }
+    var bottom = window.innerHeight - r.top + pad + 18;
+    coach.style.top = 'auto'; coach.style.bottom = Math.min(bottom, window.innerHeight - coach.offsetHeight - 8) + 'px';
+    coach.style.setProperty('--arrow-x', Math.min(Math.max(cx - left, 28), cw - 28) + 'px');
+    coach.focus({ preventScroll: true });
+  }
+  function startTour() { tourI = 0; tour.hidden = false; stage.setAttribute('inert', ''); bar.setAttribute('inert', ''); requestAnimationFrame(function () { placeStep(); requestAnimationFrame(placeStep); }); }
+  function endTour() { tour.hidden = true; stage.removeAttribute('inert'); bar.removeAttribute('inert'); showHint('You’re set — pick a page and tap record when ready.', 4000); recBtn.focus({ preventScroll: true }); }
+  $('coach-next').addEventListener('click', function () { if (++tourI >= STEPS.length) endTour(); else placeStep(); });
+  $('coach-skip').addEventListener('click', endTour);
+  window.addEventListener('resize', function () { if (!tour.hidden) placeStep(); });
+  $('replay-tour').addEventListener('click', function (e) { e.preventDefault(); closeSheet(); startTour(); });
+
+  /* ---------- boot ---------- */
+  if (!supported) { $('unsupported').hidden = false; $('start').disabled = true; recBtn.disabled = true; }
+  stage.setAttribute('inert', ''); bar.setAttribute('inert', '');
+  page = R.pageByKey(lsGet('abby-review-page')).key;
+  renderTabs();
+  function recover() {
+    return loadChunks().then(function (rows) {
+      var byId = {};
+      (rows || []).forEach(function (r) { var g = byId[r.clipId] = byId[r.clipId] || { meta: null, parts: [] }; if (r.seq === undefined) g.meta = r; else g.parts.push(r); });
+      var ids = Object.keys(byId), recovered = 0;
+      return ids.reduce(function (p, id) {
+        return p.then(function () {
+          var g = byId[id], m = g.meta || {};
+          g.parts.sort(function (a, b) { return a.seq - b.seq; });
+          var total = 0, newest = 0; g.parts.forEach(function (c) { total += c.buf.byteLength; if (c.at > newest) newest = c.at; });
+          var known = clips.some(function (c) { return c.id === id; });
+          if (known || g.parts.length < 2 || !total) return clearChunks(id).catch(function () {});
+          if (Date.now() - newest < 15000) return;   // still being written by another open window — leave it alone
+          var blob = new Blob(g.parts.map(function (c) { return c.buf; }), { type: m.mime || '' });
+          var clip = { id: id, pages: m.pages || [page], page: (m.pages || [page])[0], startedAt: m.startedAt || Number(id), durationMs: g.parts.length * 1000, mime: m.mime || '', size: total, blob: blob, uploaded: false };
+          return blob.arrayBuffer().then(function (buf) { clip.buf = buf; return save(clip); }).then(function () { clips.push(clip); recovered++; return clearChunks(id); }).catch(function () {});
+        });
+      }, Promise.resolve()).then(function () { return recovered; });
+    }).catch(function () { return 0; });
+  }
+  loadAll().then(function (rows) { clips = (rows || []).map(fromRow).filter(Boolean); renderCount(); return recover(); }).then(function (n) {
+    if (n) { renderCount(); showHint(n === 1 ? 'Recovered the note you were recording — it’s in your notes.' : 'Recovered ' + n + ' notes you were recording.', 5000); }
+    uploadPending(false);
+  }).catch(function () {});
+  function begin() {
+    welcome.style.opacity = '0';
+    setTimeout(function () { welcome.hidden = true; startTour(); }, 400);
+    frame.src = R.pageByKey(page).src;
+    lsSet('abby-review-seen', '1');
+  }
+  $('start').addEventListener('click', begin);
+  if (lsGet('abby-review-seen') === '1' && supported) { welcome.hidden = true; stage.removeAttribute('inert'); bar.removeAttribute('inert'); frame.src = R.pageByKey(page).src; }
+  window.addEventListener('beforeunload', function (e) { if (recorder) { e.preventDefault(); e.returnValue = ''; } });
+})();
+</script>
+</body>
+</html>
