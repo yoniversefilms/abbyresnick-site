@@ -39,13 +39,12 @@ test('fmtDuration renders m:ss and clamps negatives', () => {
   assert.equal(r.fmtDuration(-5), '0:00');
 });
 
-test('clipName is safe for every share target and sorts chronologically', () => {
+test('clipName is deterministic per note, to the second, and safe for every target', () => {
   const at = new Date(2026, 9, 12, 14, 7, 9); // local time
-  assert.equal(r.clipName({ page: 'home', startedAt: at.getTime(), mime: 'audio/mp4' }, 0),
-    'abby-notes-01-home-2026-10-12-1407.m4a');
-  assert.equal(r.clipName({ page: 'portfolio', startedAt: at.getTime(), mime: 'audio/webm' }, 11),
-    'abby-notes-12-portfolio-2026-10-12-1407.webm');
-  assert.match(r.clipName({ page: 'x y', startedAt: at.getTime(), mime: '' }, 0), /^[a-z0-9.-]+$/);
+  assert.equal(r.clipName({ page: 'home', startedAt: at.getTime(), mime: 'audio/mp4' }), 'abby-note-2026-10-12-140709-home.m4a');
+  assert.equal(r.clipName({ page: 'portfolio', startedAt: at.getTime(), mime: 'audio/webm' }), 'abby-note-2026-10-12-140709-portfolio.webm');
+  assert.equal(r.clipName({ page: 'home', startedAt: at.getTime() + 1000, mime: 'audio/mp4' }), 'abby-note-2026-10-12-140710-home.m4a');
+  assert.match(r.clipName({ page: 'x y', startedAt: at.getTime(), mime: '' }), /^[a-z0-9.-]+$/);
 });
 
 test('pathToPage maps the framed site\'s pathname to a page key, null for anything else', () => {
@@ -68,27 +67,39 @@ test('pagesLabel joins the distinct pages visited during a note', () => {
 
 test('clipName uses the page the note started on', () => {
   const at = new Date(2026, 9, 12, 14, 7, 9).getTime();
-  assert.equal(r.clipName({ pages: ['corporate', 'home'], startedAt: at, mime: 'audio/mp4' }, 2), 'abby-notes-03-corporate-2026-10-12-1407.m4a');
+  assert.equal(r.clipName({ pages: ['corporate', 'home'], startedAt: at, mime: 'audio/mp4' }), 'abby-note-2026-10-12-140709-corporate.m4a');
 });
 
 test('uploadPayload carries the file, its name, and the note metadata', () => {
   const at = new Date(2026, 9, 12, 14, 7, 9).getTime();
-  const p = r.uploadPayload({ pages: ['home', 'portfolio'], startedAt: at, durationMs: 4000, mime: 'audio/mp4', size: 99 }, 0, 'QUJD');
-  assert.equal(p.name, 'abby-notes-01-home-2026-10-12-1407.m4a');
+  const p = r.uploadPayload({ id: String(at), pages: ['home', 'portfolio'], startedAt: at, durationMs: 4000, mime: 'audio/mp4', size: 99 }, 'QUJD');
+  assert.equal(p.id, String(at));
+  assert.equal(p.name, 'abby-note-2026-10-12-140709-home.m4a');
   assert.equal(p.data, 'QUJD');
   assert.equal(p.mime, 'audio/mp4');
   assert.equal(p.page, 'home');
   assert.deepEqual(p.pages, ['home', 'portfolio']);
   assert.equal(p.durationMs, 4000);
   assert.equal(p.size, 99);
-  assert.equal(r.uploadPayload({ page: 'home', startedAt: at, mime: '', size: 1 }, 0, 'x').mime, 'application/octet-stream');
+  assert.equal(r.uploadPayload({ page: 'home', startedAt: at, mime: '', size: 1 }, 'x').mime, 'audio/mp4');
+  assert.equal(r.uploadPayload({ page: 'home', startedAt: at, mime: '', size: 1 }, 'x').id, String(at));
 });
 
-test('statusText reflects the upload state only when an endpoint exists', () => {
-  assert.equal(r.statusText({ uploaded: true }, false), '');
+test('statusText reflects the upload state', () => {
+  assert.equal(r.statusText({}, false), '');
+  assert.equal(r.statusText({ uploaded: true }, false), 'Sent');
   assert.equal(r.statusText({ uploaded: true }, true), 'Sent to Yonatan');
   assert.equal(r.statusText({ uploading: true }, true), 'Sending…');
+  assert.equal(r.statusText({ failed: true }, true), 'Couldn’t send — will try again');
   assert.equal(r.statusText({}, true), 'Not sent yet');
+});
+
+test('isIOS spots iPhones, iPads (including desktop-mode Safari) and nothing else', () => {
+  assert.equal(r.isIOS({ userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15' }), true);
+  assert.equal(r.isIOS({ userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15', maxTouchPoints: 5 }), true);
+  assert.equal(r.isIOS({ userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15', maxTouchPoints: 0 }), false);
+  assert.equal(r.isIOS({ userAgent: 'Mozilla/5.0 (Linux; Android 14) Chrome/120' }), false);
+  assert.equal(r.isIOS(null), false);
 });
 
 test('totalBytes sums clip sizes and tolerates missing sizes', () => {

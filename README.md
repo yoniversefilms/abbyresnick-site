@@ -66,6 +66,8 @@ Images on `portfolio.html` (and the re-sourced homepage strip / corporate grid) 
 An unlinked, `noindex` page for Abby to review the live site by voice: the site runs in a frame, a bottom bar has the
 page tabs, a Record button and a Notes sheet. Each stop saves one note (IndexedDB, survives reloads) and uploads it
 automatically to the endpoint in `UPLOAD_URL` (`review/index.html`). That endpoint is the Google Apps Script in
-`scripts/review-upload.gs`, deployed once from Yonatan's Google account (setup steps are in the file's header); notes land
-in the Drive folder "Abby site notes". With `UPLOAD_URL` empty the sheet offers share-to-Messages/WhatsApp/Mail
-(iPhone) or a download instead. Helpers live in `assets/js/review.js`; tests in `scripts/review.test.js`.
+`scripts/review-upload.gs`, deployed once from Yonatan's Google account as a Web app (Execute as Me · Anyone — the setup,
+check and re-deploy steps are in the file's header); notes land in the Drive folder "Abby site notes", audio only, one copy
+per note even if the page retries. With `UPLOAD_URL` empty the sheet offers share-to-Messages/WhatsApp/Mail (iPhone) or a
+download instead. The note in progress is written to IndexedDB second by second and recovered on the next load if the tab
+is dropped. Helpers live in `assets/js/review.js`; tests in `scripts/review.test.js`.

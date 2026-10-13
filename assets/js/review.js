@@ -52,12 +52,14 @@
   }
   function fmtStamp(ts) {
     var d = new Date(ts);
-    return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()) + '-' + pad2(d.getHours()) + pad2(d.getMinutes());
+    return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()) + '-' + pad2(d.getHours()) + pad2(d.getMinutes()) + pad2(d.getSeconds());
   }
   function slug(s) { return String(s || 'page').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'page'; }
-  function clipName(clip, index) {
+  /* Deterministic per note (start time to the second + page it started on): sorts chronologically in Drive
+     and lets the upload endpoint skip a repeat of the same note. */
+  function clipName(clip) {
     var first = (clip.pages && clip.pages[0]) || clip.page;
-    return 'abby-notes-' + pad2(index + 1) + '-' + slug(first) + '-' + fmtStamp(clip.startedAt) + '.' + extFor(clip.mime);
+    return 'abby-note-' + fmtStamp(clip.startedAt) + '-' + slug(first) + '.' + extFor(clip.mime);
   }
   function totalBytes(clips) {
     var t = 0;
@@ -79,25 +81,30 @@
     return clips.length + ' voice note' + (clips.length === 1 ? '' : 's') + ' on abbyresnick.com (' + fmtDuration(total) + ' total)';
   }
   /* The JSON body posted to the upload endpoint (Google Apps Script → Drive). `data` is base64. */
-  function uploadPayload(clip, index, base64) {
+  function uploadPayload(clip, base64) {
     return {
-      name: clipName(clip, index), mime: clip.mime || 'application/octet-stream', data: base64,
+      id: String(clip.id || clip.startedAt), name: clipName(clip), mime: clip.mime || 'audio/mp4', data: base64,
       page: (clip.pages && clip.pages[0]) || clip.page, pages: clip.pages || [clip.page],
       startedAt: clip.startedAt, durationMs: clip.durationMs, size: clip.size
     };
   }
   /* Status line for a note in the list. */
   function statusText(clip, hasEndpoint) {
-    if (!hasEndpoint) return '';
+    if (!hasEndpoint) return clip.uploaded ? 'Sent' : '';
     if (clip.uploaded) return 'Sent to Yonatan';
     if (clip.uploading) return 'Sending…';
+    if (clip.failed) return 'Couldn’t send — will try again';
     return 'Not sent yet';
+  }
+  function isIOS(nav) {
+    var ua = (nav && nav.userAgent) || '', touchMac = /Macintosh/.test(ua) && nav && nav.maxTouchPoints > 1;
+    return /iPhone|iPad|iPod/.test(ua) || !!touchMac;
   }
 
   var api = {
     PAGES: PAGES, pageByKey: pageByKey, pathToPage: pathToPage, pagesLabel: pagesLabel, pickMime: pickMime, extFor: extFor,
     fmtDuration: fmtDuration, fmtClock: fmtClock, clipName: clipName, totalBytes: totalBytes, fmtBytes: fmtBytes,
-    canShareFiles: canShareFiles, shareText: shareText, uploadPayload: uploadPayload, statusText: statusText
+    canShareFiles: canShareFiles, shareText: shareText, uploadPayload: uploadPayload, statusText: statusText, isIOS: isIOS
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.Review = api;

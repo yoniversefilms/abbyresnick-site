@@ -49,7 +49,8 @@ body.recording .rec-btn::before{border-radius:4px;width:20px;height:20px}
 body.recording .rec-label{color:var(--rec)}
 .right{display:flex;justify-content:flex-end;align-items:center;gap:6px}
 .notes-btn{display:flex;align-items:center;gap:8px;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;font-weight:500;color:var(--mauve);min-height:44px;padding:0 14px;border:1px solid var(--mauve);border-radius:999px;transition:.25s}
-.notes-btn .n{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:var(--mauve);color:var(--cream);font-size:.68rem}
+.notes-btn .n{position:relative;display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 6px;border-radius:999px;background:var(--mauve);color:var(--cream);font-size:.68rem}
+body.has-failed .notes-btn .n::after{content:"";position:absolute;top:-3px;right:-3px;width:9px;height:9px;border-radius:50%;background:var(--rec);border:2px solid var(--cream)}
 @media (hover:hover){
   .tab:hover{color:var(--mauve)}
   .rec-btn:hover{transform:scale(1.04)}
@@ -142,7 +143,7 @@ body.sheet-open .sheet{transform:none;visibility:visible;transition:transform .3
     <img class="logo" src="/assets/brand/logo.svg" alt="Abby Resnick — Floral Design, Los Angeles">
     <div class="rule"></div>
     <h1 id="wh">Walk the site, <em>say what you see.</em></h1>
-    <p class="lead">This is the live website with a voice recorder underneath. Talk through it as you scroll &mdash; what to change, what you love, what&rsquo;s missing. Every note is saved for Yonatan automatically.</p>
+    <p class="lead">This is the live website with a voice recorder underneath. Talk through it as you scroll &mdash; what to change, what you love, what&rsquo;s missing. <span id="lead-auto" hidden>Every note is sent to Yonatan automatically.</span><span id="lead-manual">When you&rsquo;re done, send your notes to Yonatan from the Notes button.</span></p>
     <button class="btn" id="start" type="button">Show me around</button>
     <p class="fine">Takes 20 seconds. Your browser will ask to use the microphone the first time you record. Links inside the site work as usual &mdash; the tabs at the bottom bring you back.</p>
     <p class="unsupported" id="unsupported" hidden>This browser can&rsquo;t record audio. Please open this link in Safari (iPhone) or Chrome.</p>
@@ -185,7 +186,7 @@ body.sheet-open .sheet{transform:none;visibility:visible;transition:transform .3
 
 <div class="tour" id="tour" hidden>
   <div class="spot" id="spot"></div>
-  <div class="coach" id="coach" role="dialog" aria-live="polite" aria-labelledby="coach-h" tabindex="-1">
+  <div class="coach" id="coach" role="dialog" aria-modal="true" aria-live="polite" aria-labelledby="coach-h" tabindex="-1">
     <div class="step" id="coach-step"></div>
     <h3 id="coach-h"></h3>
     <p id="coach-p"></p>
@@ -208,30 +209,39 @@ body.sheet-open .sheet{transform:none;visibility:visible;transition:transform .3
   var $ = function (id) { return document.getElementById(id); };
   var frame = $('frame'), tabs = $('tabs'), recBtn = $('rec'), recLabel = $('rec-label');
   var countEl = $('count'), list = $('list'), meta = $('meta'), sendBtn = $('send'), clearBtn = $('clear'), footNote = $('foot-note');
-  var hint = $('hint'), hintText = $('hint-text'), welcome = $('welcome'), sheet = $('sheet');
+  var hint = $('hint'), hintText = $('hint-text'), welcome = $('welcome'), sheet = $('sheet'), stage = $('stage'), bar = document.querySelector('.bar');
   var supported = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder);
   var hasEndpoint = /^https:\/\//.test(UPLOAD_URL);
+  var UPLOAD_TIMEOUT = 120000;
+  $('lead-auto').hidden = !hasEndpoint; $('lead-manual').hidden = hasEndpoint;
   function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
   function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
 
-  /* ---------- storage (IndexedDB; audio kept as ArrayBuffer so Private Browsing can store it) ---------- */
-  var DB = 'abby-review', STORE = 'clips', dbp = null;
+  /* ---------- storage (IndexedDB) ----------
+     `clips`  = finished notes (audio as ArrayBuffer so Private Browsing can store it).
+     `chunks` = the note in progress, one row per second of audio, so a reload or a dropped tab
+                mid-note is recovered on the next load instead of lost. */
+  var DB = 'abby-review', STORE = 'clips', CHUNKS = 'chunks', dbp = null;
   function db() {
     if (dbp) return dbp;
     dbp = new Promise(function (res, rej) {
       if (!window.indexedDB) return rej(new Error('no indexedDB'));
-      var req = indexedDB.open(DB, 1);
-      req.onupgradeneeded = function () { req.result.createObjectStore(STORE, { keyPath: 'id' }); };
+      var req = indexedDB.open(DB, 2);
+      req.onupgradeneeded = function () {
+        var d = req.result;
+        if (!d.objectStoreNames.contains(STORE)) d.createObjectStore(STORE, { keyPath: 'id' });
+        if (!d.objectStoreNames.contains(CHUNKS)) d.createObjectStore(CHUNKS, { keyPath: 'key' });
+      };
       req.onsuccess = function () { res(req.result); };
       req.onerror = function () { rej(req.error); };
       req.onblocked = function () { rej(new Error('blocked')); };
     });
     return dbp;
   }
-  function tx(mode, fn) {
+  function tx(store, mode, fn) {
     return db().then(function (d) {
       return new Promise(function (res, rej) {
-        var t = d.transaction(STORE, mode), s = t.objectStore(STORE), out = fn(s);
+        var t = d.transaction(store, mode), s = t.objectStore(store), out = fn(s);
         t.oncomplete = function () { res(out && out.result !== undefined ? out.result : out); };
         t.onerror = function () { rej(t.error); };
         t.onabort = function () { rej(t.error || new Error('aborted')); };
@@ -243,22 +253,33 @@ body.sheet-open .sheet{transform:none;visibility:visible;transition:transform .3
       uploaded: !!clip.uploaded, buf: clip.buf };
   }
   function fromRow(row) {
+    if (!row || !row.buf) return null;
     row.blob = new Blob([row.buf], { type: row.mime || '' });
     row.page = row.pages && row.pages[0];
     return row;
   }
-  var loadAll = function () { return tx('readonly', function (s) { return s.getAll(); }); };
-  var save = function (clip) { return tx('readwrite', function (s) { s.put(toRow(clip)); return clip; }); };
-  var remove = function (id) { return tx('readwrite', function (s) { s.delete(id); }); };
+  var loadAll = function () { return tx(STORE, 'readonly', function (s) { return s.getAll(); }); };
+  var save = function (clip) { return tx(STORE, 'readwrite', function (s) { s.put(toRow(clip)); return clip; }); };
+  var remove = function (id) { return tx(STORE, 'readwrite', function (s) { s.delete(id); }); };
+  var putChunk = function (row) { return tx(CHUNKS, 'readwrite', function (s) { s.put(row); }); };
+  var loadChunks = function () { return tx(CHUNKS, 'readonly', function (s) { return s.getAll(); }); };
+  var clearChunks = function (clipId) {
+    return tx(CHUNKS, 'readwrite', function (s) {
+      var range = IDBKeyRange.bound(clipId + ':', clipId + ':\uffff');
+      s.delete(range);
+    });
+  };
+  function chunkKey(clipId, seq) { return clipId + ':c' + ('000000' + seq).slice(-6); }
 
   /* ---------- state ---------- */
   var clips = [], page = R.PAGES[0].key, urls = {}, revokeTimer = null;
-  var recorder = null, stream = null, chunks = [], startedAt = 0, timer = null, visited = [], afterStop = null;
+  var recorder = null, stream = null, chunks = [], startedAt = 0, timer = null, visited = [], afterStop = null, seq = 0;
 
   function showHint(text, ms) {
     hintText.textContent = text; hint.classList.add('show');
     clearTimeout(showHint.t); showHint.t = setTimeout(function () { hint.classList.remove('show'); }, ms || 2600);
   }
+  function paintBadge() { document.body.classList.toggle('has-failed', clips.some(function (c) { return c.failed; })); }
 
   /* ---------- tabs / frame ---------- */
   function renderTabs() {
@@ -276,7 +297,10 @@ body.sheet-open .sheet{transform:none;visibility:visible;transition:transform .3
     if (navigate) frame.src = R.pageByKey(page).src;
     lsSet('abby-review-page', page);
     renderTabs();
-    if (recorder && visited[visited.length - 1] !== page) { visited.push(page); showHint('Still recording — now on ' + R.pageByKey(page).label); }
+    if (recorder && visited[visited.length - 1] !== page) {
+      visited.push(page); showHint('Still recording — now on ' + R.pageByKey(page).label);
+      putChunk({ key: String(startedAt) + ':meta', clipId: String(startedAt), pages: visited.slice(), startedAt: startedAt, mime: recorder.mimeType || '' }).catch(function () {});
+    }
   }
   /* The site links to itself (nav, hero, footer). Keep the tabs and the note's page list in step. */
   frame.addEventListener('load', function () {
@@ -296,11 +320,18 @@ body.sheet-open .sheet{transform:none;visibility:visible;transition:transform .3
       stream = s; chunks = [];
       var mime = R.pickMime(function (m) { return MediaRecorder.isTypeSupported(m); });
       recorder = mime ? new MediaRecorder(s, { mimeType: mime }) : new MediaRecorder(s);
-      recorder.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); };
+      startedAt = Date.now(); visited = [page]; seq = 0;
+      var clipId = String(startedAt);
+      recorder.ondataavailable = function (e) {
+        if (!e.data || !e.data.size) return;
+        chunks.push(e.data);
+        var n = seq++;
+        e.data.arrayBuffer().then(function (buf) { return putChunk({ key: chunkKey(clipId, n), clipId: clipId, seq: n, buf: buf }); }).catch(function () {});
+      };
       recorder.onstop = finishRec;
       recorder.onerror = function () { finishRec(); };
       recorder.start(1000);
-      startedAt = Date.now(); visited = [page];
+      putChunk({ key: clipId + ':meta', clipId: clipId, pages: visited.slice(), startedAt: startedAt, mime: recorder.mimeType || mime }).catch(function () {});
       document.body.classList.add('recording');
       recBtn.setAttribute('aria-pressed', 'true'); recBtn.setAttribute('aria-label', 'Stop recording');
       tick(); timer = setInterval(tick, 500);
@@ -309,7 +340,9 @@ body.sheet-open .sheet{transform:none;visibility:visible;transition:transform .3
     }).catch(function (err) {
       recBtn.disabled = false;
       var denied = err && (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError');
-      showHint(denied ? 'Microphone blocked. On iPhone: tap “AA” in the address bar → Website Settings → Microphone → Allow.' : 'Couldn’t start the microphone. Try again.', 7000);
+      showHint(!denied ? 'Couldn’t start the microphone. Try again.' : R.isIOS(navigator)
+        ? 'Microphone blocked. Tap “AA” in the address bar → Website Settings → Microphone → Allow.'
+        : 'Microphone blocked. Allow it for this site in your browser’s site settings, then try again.', 7000);
     });
   }
   function stopRec(then) {
@@ -331,13 +364,14 @@ body.sheet-open .sheet{transform:none;visibility:visible;transition:transform .3
     recLabel.textContent = 'Record';
     recBtn.disabled = false;
     var done = function () { if (afterStop) { var f = afterStop; afterStop = null; f(); } };
-    if (clip.durationMs < 700 || !clip.size) { showHint('Too short — hold the thought a little longer.'); done(); return; }
+    if (clip.durationMs < 700 || !clip.size) { showHint('Too short — hold the thought a little longer.'); clearChunks(clip.id).catch(function () {}); done(); return; }
     blob.arrayBuffer().then(function (buf) { clip.buf = buf; return save(clip); }).then(function () {
       clips.push(clip); renderCount();
       showHint('Saved · ' + R.fmtDuration(clip.durationMs) + ' on ' + R.pagesLabel(clip.pages));
+      return clearChunks(clip.id).catch(function () {});
     }).catch(function () {
       clips.push(clip); renderCount();
-      showHint(hasEndpoint ? 'Saved · sending to Yonatan now.' : 'Saved for this visit only — share your notes before closing the page.', 5000);
+      showHint(hasEndpoint && navigator.onLine ? 'Saved · sending to Yonatan now.' : 'Saved for this visit only — keep this page open until your notes are sent.', 5000);
     }).then(function () { upload(clip); done(); });
   }
   recBtn.addEventListener('click', function () { if (recorder) stopRec(); else startRec(); });
@@ -354,22 +388,28 @@ body.sheet-open .sheet{transform:none;visibility:visible;transition:transform .3
       fr.readAsDataURL(blob);
     });
   }
-  function upload(clip) {
-    if (!hasEndpoint || clip.uploaded || clip.uploading || !navigator.onLine) return Promise.resolve(false);
-    clip.uploading = true; clip.failed = false; paintStatus(clip);
-    var index = clips.indexOf(clip); if (index < 0) index = clips.length;
+  function upload(clip, byHand) {
+    if (!hasEndpoint || clip.uploaded || clip.uploading) return Promise.resolve(false);
+    if (!navigator.onLine) { if (byHand) showHint('You’re offline — your notes will go to Yonatan as soon as you’re back online.', 5000); return Promise.resolve(false); }
+    clip.uploading = true; clip.failed = false; paintStatus(clip); paintBadge();
+    var ctrl = typeof AbortController === 'function' ? new AbortController() : null;
+    var kill = setTimeout(function () { if (ctrl) ctrl.abort(); }, UPLOAD_TIMEOUT);
     return toBase64(clip.blob).then(function (b64) {
-      return fetch(UPLOAD_URL, { method: 'POST', body: JSON.stringify(R.uploadPayload(clip, index, b64)) });
+      var opts = { method: 'POST', body: JSON.stringify(R.uploadPayload(clip, b64)) };
+      if (ctrl) opts.signal = ctrl.signal;
+      return fetch(UPLOAD_URL, opts);
     }).then(function (r) { return r.json(); }).then(function (j) {
       if (!j || !j.ok) throw new Error((j && j.error) || 'upload rejected');
       clip.uploaded = true; clip.uploading = false;
       return save(clip).catch(function () {});
-    }).then(function () { paintStatus(clip); return true; }).catch(function () {
-      clip.uploading = false; clip.failed = true; paintStatus(clip); return false;
+    }).then(function () { clearTimeout(kill); paintStatus(clip); paintBadge(); return true; }).catch(function () {
+      clearTimeout(kill); clip.uploading = false; clip.failed = true; paintStatus(clip); paintBadge();
+      if (!upload.warned || byHand) { upload.warned = true; showHint('Couldn’t send that note to Yonatan yet. It’s saved here and will be sent again automatically.', 6000); }
+      return false;
     });
   }
-  function uploadPending() { clips.forEach(function (c) { if (!c.uploaded) upload(c); }); }
-  window.addEventListener('online', uploadPending);
+  function uploadPending(byHand) { clips.forEach(function (c) { if (!c.uploaded) upload(c, byHand); }); }
+  window.addEventListener('online', function () { uploadPending(false); });
 
   /* ---------- notes sheet ---------- */
   function renderCount() { countEl.textContent = String(clips.length); $('open-notes').setAttribute('aria-label', 'Your notes, ' + clips.length); }
@@ -394,8 +434,8 @@ body.sheet-open .sheet{transform:none;visibility:visible;transition:transform .3
         : sending ? 'Sending to Yonatan…' : 'Some notes haven’t reached Yonatan yet — check your connection and tap to send again.';
     } else {
       var canShare = R.canShareFiles(navigator, filesFor());
-      sendBtn.hidden = false; sendBtn.disabled = !clips.length; clearBtn.hidden = true;
-      sendBtn.textContent = canShare ? 'Send to Yonatan' : 'Download notes';
+      sendBtn.hidden = false; sendBtn.disabled = !clips.length; clearBtn.hidden = !sent;
+      sendBtn.textContent = (canShare ? 'Send to Yonatan' : 'Download notes') + (sent && pending.length && pending.length < clips.length ? ' (' + pending.length + ' new)' : '');
       footNote.textContent = !clips.length ? '' : canShare
         ? 'Opens your share sheet — pick Messages, WhatsApp or Mail and send to Yonatan.'
         : 'Saves the audio files to this device. Then attach them to a message or email to Yonatan.';
@@ -432,7 +472,7 @@ body.sheet-open .sheet{transform:none;visibility:visible;transition:transform .3
   }
   function filesFor() {
     return clips.map(function (c, i) {
-      try { return new File([c.blob], R.clipName(c, i), { type: c.mime || 'application/octet-stream' }); } catch (e) { return null; }
+      try { return new File([c.blob], R.clipName(c), { type: c.mime || 'application/octet-stream' }); } catch (e) { return null; }
     }).filter(Boolean);
   }
   var lastFocus = null;
@@ -441,11 +481,13 @@ body.sheet-open .sheet{transform:none;visibility:visible;transition:transform .3
     renderList();
     lastFocus = document.activeElement;
     document.body.classList.add('sheet-open'); sheet.removeAttribute('inert');
+    stage.setAttribute('inert', ''); bar.setAttribute('inert', '');
     $('close').focus();
   }
   function closeSheet() {
     if (!document.body.classList.contains('sheet-open')) return;
     document.body.classList.remove('sheet-open'); sheet.setAttribute('inert', '');
+    if ($('tour').hidden) { stage.removeAttribute('inert'); bar.removeAttribute('inert'); }
     list.querySelectorAll('audio').forEach(function (a) { a.pause(); });
     revokeTimer = setTimeout(revokeAll, 450);
     if (lastFocus && lastFocus.focus) lastFocus.focus();
@@ -453,19 +495,29 @@ body.sheet-open .sheet{transform:none;visibility:visible;transition:transform .3
   $('open-notes').addEventListener('click', function () { if (recorder) stopRec(openSheet); else openSheet(); });
   $('close').addEventListener('click', closeSheet);
   $('scrim').addEventListener('click', closeSheet);
+  function trapTab(e, root) {
+    var f = root.querySelectorAll('button:not([disabled]):not([hidden]),a[href],audio[controls],[tabindex]:not([tabindex="-1"])');
+    if (!f.length) return;
+    var first = f[0], last = f[f.length - 1];
+    if (e.shiftKey && (document.activeElement === first || document.activeElement === root)) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  }
   document.addEventListener('keydown', function (e) {
-    if (e.key !== 'Escape') return;
-    if (document.body.classList.contains('sheet-open')) closeSheet();
-    else if (!$('tour').hidden) endTour();
+    var sheetOpen = document.body.classList.contains('sheet-open'), tourOpen = !$('tour').hidden;
+    if (e.key === 'Escape') { if (sheetOpen) closeSheet(); else if (tourOpen) endTour(); return; }
+    if (e.key === 'Tab') { if (sheetOpen) trapTab(e, sheet); else if (tourOpen) trapTab(e, $('coach')); }
   });
 
   sendBtn.addEventListener('click', function () {
-    if (hasEndpoint) { clips.forEach(function (c) { c.failed = false; }); uploadPending(); paintFoot(); return; }
-    var files = filesFor();
+    if (hasEndpoint) { clips.forEach(function (c) { c.failed = false; }); uploadPending(true); paintFoot(); paintBadge(); return; }
+    var files = filesFor().filter(function (f, i) { return !clips[i].uploaded; });
+    if (!files.length) files = filesFor();
     if (!files.length) return;
     if (R.canShareFiles(navigator, files)) {
-      navigator.share({ files: files, title: 'Site notes — Abby', text: R.shareText(clips) }).then(function () {
-        showHint('Sent · thank you!', 4000); closeSheet();
+      var batch = clips.slice();
+      navigator.share({ files: files, title: 'Site notes — Abby', text: R.shareText(batch) }).then(function () {
+        batch.forEach(function (c) { c.uploaded = true; save(c).catch(function () {}); });
+        showHint('Sent · thank you!', 4000); renderList();
       }).catch(function (err) {
         if (err && err.name === 'AbortError') return;        // she closed the share sheet
         downloadAll(files);
@@ -517,8 +569,8 @@ body.sheet-open .sheet{transform:none;visibility:visible;transition:transform .3
     coach.style.setProperty('--arrow-x', Math.min(Math.max(cx - left, 28), cw - 28) + 'px');
     coach.focus({ preventScroll: true });
   }
-  function startTour() { tourI = 0; tour.hidden = false; requestAnimationFrame(function () { placeStep(); requestAnimationFrame(placeStep); }); }
-  function endTour() { tour.hidden = true; showHint('You’re set — pick a page and tap record when ready.', 4000); recBtn.focus({ preventScroll: true }); }
+  function startTour() { tourI = 0; tour.hidden = false; stage.setAttribute('inert', ''); bar.setAttribute('inert', ''); requestAnimationFrame(function () { placeStep(); requestAnimationFrame(placeStep); }); }
+  function endTour() { tour.hidden = true; stage.removeAttribute('inert'); bar.removeAttribute('inert'); showHint('You’re set — pick a page and tap record when ready.', 4000); recBtn.focus({ preventScroll: true }); }
   $('coach-next').addEventListener('click', function () { if (++tourI >= STEPS.length) endTour(); else placeStep(); });
   $('coach-skip').addEventListener('click', endTour);
   window.addEventListener('resize', function () { if (!tour.hidden) placeStep(); });
@@ -528,7 +580,29 @@ body.sheet-open .sheet{transform:none;visibility:visible;transition:transform .3
   if (!supported) { $('unsupported').hidden = false; $('start').disabled = true; recBtn.disabled = true; }
   page = R.pageByKey(lsGet('abby-review-page')).key;
   renderTabs();
-  loadAll().then(function (rows) { clips = (rows || []).map(fromRow); renderCount(); uploadPending(); }).catch(function () {});
+  function recover() {
+    return loadChunks().then(function (rows) {
+      var byId = {};
+      (rows || []).forEach(function (r) { var g = byId[r.clipId] = byId[r.clipId] || { meta: null, parts: [] }; if (r.seq === undefined) g.meta = r; else g.parts.push(r); });
+      var ids = Object.keys(byId), recovered = 0;
+      return ids.reduce(function (p, id) {
+        return p.then(function () {
+          var g = byId[id], m = g.meta || {};
+          g.parts.sort(function (a, b) { return a.seq - b.seq; });
+          var total = 0; g.parts.forEach(function (c) { total += c.buf.byteLength; });
+          var known = clips.some(function (c) { return c.id === id; });
+          if (known || g.parts.length < 2 || !total) return clearChunks(id).catch(function () {});
+          var blob = new Blob(g.parts.map(function (c) { return c.buf; }), { type: m.mime || '' });
+          var clip = { id: id, pages: m.pages || [page], page: (m.pages || [page])[0], startedAt: m.startedAt || Number(id), durationMs: g.parts.length * 1000, mime: m.mime || '', size: total, blob: blob, uploaded: false };
+          return blob.arrayBuffer().then(function (buf) { clip.buf = buf; return save(clip); }).then(function () { clips.push(clip); recovered++; return clearChunks(id); }).catch(function () {});
+        });
+      }, Promise.resolve()).then(function () { return recovered; });
+    }).catch(function () { return 0; });
+  }
+  loadAll().then(function (rows) { clips = (rows || []).map(fromRow).filter(Boolean); renderCount(); return recover(); }).then(function (n) {
+    if (n) { renderCount(); showHint(n === 1 ? 'Recovered the note you were recording — it’s in your notes.' : 'Recovered ' + n + ' notes you were recording.', 5000); }
+    uploadPending(false);
+  }).catch(function () {});
   function begin() {
     welcome.style.opacity = '0';
     setTimeout(function () { welcome.hidden = true; startTour(); }, 400);
