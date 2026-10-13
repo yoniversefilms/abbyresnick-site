@@ -61,3 +61,11 @@ Images on `portfolio.html` (and the re-sourced homepage strip / corporate grid) 
 - Tests: `python3 -m unittest scripts.test_portfolio_images` and `node --test 'scripts/*.test.js'`.
 - To change what's shown: edit the private manifest, rebuild, commit the regenerated files.
 - Rule: florals and decor only; Abby is the only person who appears.
+
+## Site review recorder (`/review/`)
+An unlinked, `noindex` page for Abby to review the live site by voice: the site runs in a frame, a bottom bar has the
+page tabs, a Record button and a Notes sheet. Each stop saves one note (IndexedDB, survives reloads) and uploads it
+automatically to the endpoint in `UPLOAD_URL` (`review/index.html`). That endpoint is the Google Apps Script in
+`scripts/review-upload.gs`, deployed once from Yonatan's Google account (setup steps are in the file's header); notes land
+in the Drive folder "Abby site notes". With `UPLOAD_URL` empty the sheet offers share-to-Messages/WhatsApp/Mail
+(iPhone) or a download instead. Helpers live in `assets/js/review.js`; tests in `scripts/review.test.js`.
