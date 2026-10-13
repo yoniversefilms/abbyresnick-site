@@ -326,7 +326,7 @@ body.sheet-open .sheet{transform:none;visibility:visible;transition:transform .3
         if (!e.data || !e.data.size) return;
         chunks.push(e.data);
         var n = seq++;
-        e.data.arrayBuffer().then(function (buf) { return putChunk({ key: chunkKey(clipId, n), clipId: clipId, seq: n, buf: buf }); }).catch(function () {});
+        e.data.arrayBuffer().then(function (buf) { return putChunk({ key: chunkKey(clipId, n), clipId: clipId, seq: n, at: Date.now(), buf: buf }); }).catch(function () {});
       };
       recorder.onstop = finishRec;
       recorder.onerror = function () { finishRec(); };
@@ -389,7 +389,7 @@ body.sheet-open .sheet{transform:none;visibility:visible;transition:transform .3
     });
   }
   function upload(clip, byHand) {
-    if (!hasEndpoint || clip.uploaded || clip.uploading) return Promise.resolve(false);
+    if (!hasEndpoint || clip.uploaded || clip.uploading || clip.rejected) return Promise.resolve(false);
     if (!navigator.onLine) { if (byHand) showHint('You’re offline — your notes will go to Yonatan as soon as you’re back online.', 5000); return Promise.resolve(false); }
     clip.uploading = true; clip.failed = false; paintStatus(clip); paintBadge();
     var ctrl = typeof AbortController === 'function' ? new AbortController() : null;
@@ -399,11 +399,13 @@ body.sheet-open .sheet{transform:none;visibility:visible;transition:transform .3
       if (ctrl) opts.signal = ctrl.signal;
       return fetch(UPLOAD_URL, opts);
     }).then(function (r) { return r.json(); }).then(function (j) {
+      if (j && j.ok === false && j.error === 'too large') { clip.rejected = true; }
       if (!j || !j.ok) throw new Error((j && j.error) || 'upload rejected');
       clip.uploaded = true; clip.uploading = false;
       return save(clip).catch(function () {});
     }).then(function () { clearTimeout(kill); paintStatus(clip); paintBadge(); return true; }).catch(function () {
       clearTimeout(kill); clip.uploading = false; clip.failed = true; paintStatus(clip); paintBadge();
+      if (clip.rejected) { showHint('That note is too long to send automatically — use the share button below it instead.', 7000); return false; }
       if (!upload.warned || byHand) { upload.warned = true; showHint('Couldn’t send that note to Yonatan yet. It’s saved here and will be sent again automatically.', 6000); }
       return false;
     });
@@ -510,11 +512,11 @@ body.sheet-open .sheet{transform:none;visibility:visible;transition:transform .3
 
   sendBtn.addEventListener('click', function () {
     if (hasEndpoint) { clips.forEach(function (c) { c.failed = false; }); uploadPending(true); paintFoot(); paintBadge(); return; }
-    var files = filesFor().filter(function (f, i) { return !clips[i].uploaded; });
-    if (!files.length) files = filesFor();
+    var pending = clips.filter(function (c) { return !c.uploaded; }), batchClips = pending.length ? pending : clips.slice();
+    var files = batchClips.map(function (c) { try { return new File([c.blob], R.clipName(c), { type: c.mime || 'application/octet-stream' }); } catch (e) { return null; } }).filter(Boolean);
     if (!files.length) return;
     if (R.canShareFiles(navigator, files)) {
-      var batch = clips.slice();
+      var batch = batchClips;
       navigator.share({ files: files, title: 'Site notes — Abby', text: R.shareText(batch) }).then(function () {
         batch.forEach(function (c) { c.uploaded = true; save(c).catch(function () {}); });
         showHint('Sent · thank you!', 4000); renderList();
@@ -574,10 +576,11 @@ body.sheet-open .sheet{transform:none;visibility:visible;transition:transform .3
   $('coach-next').addEventListener('click', function () { if (++tourI >= STEPS.length) endTour(); else placeStep(); });
   $('coach-skip').addEventListener('click', endTour);
   window.addEventListener('resize', function () { if (!tour.hidden) placeStep(); });
-  $('replay-tour').addEventListener('click', function (e) { e.preventDefault(); closeSheet(); setTimeout(startTour, 450); });
+  $('replay-tour').addEventListener('click', function (e) { e.preventDefault(); closeSheet(); startTour(); });
 
   /* ---------- boot ---------- */
   if (!supported) { $('unsupported').hidden = false; $('start').disabled = true; recBtn.disabled = true; }
+  stage.setAttribute('inert', ''); bar.setAttribute('inert', '');
   page = R.pageByKey(lsGet('abby-review-page')).key;
   renderTabs();
   function recover() {
@@ -589,9 +592,10 @@ body.sheet-open .sheet{transform:none;visibility:visible;transition:transform .3
         return p.then(function () {
           var g = byId[id], m = g.meta || {};
           g.parts.sort(function (a, b) { return a.seq - b.seq; });
-          var total = 0; g.parts.forEach(function (c) { total += c.buf.byteLength; });
+          var total = 0, newest = 0; g.parts.forEach(function (c) { total += c.buf.byteLength; if (c.at > newest) newest = c.at; });
           var known = clips.some(function (c) { return c.id === id; });
           if (known || g.parts.length < 2 || !total) return clearChunks(id).catch(function () {});
+          if (Date.now() - newest < 15000) return;   // still being written by another open window — leave it alone
           var blob = new Blob(g.parts.map(function (c) { return c.buf; }), { type: m.mime || '' });
           var clip = { id: id, pages: m.pages || [page], page: (m.pages || [page])[0], startedAt: m.startedAt || Number(id), durationMs: g.parts.length * 1000, mime: m.mime || '', size: total, blob: blob, uploaded: false };
           return blob.arrayBuffer().then(function (buf) { clip.buf = buf; return save(clip); }).then(function () { clips.push(clip); recovered++; return clearChunks(id); }).catch(function () {});
@@ -610,7 +614,7 @@ body.sheet-open .sheet{transform:none;visibility:visible;transition:transform .3
     lsSet('abby-review-seen', '1');
   }
   $('start').addEventListener('click', begin);
-  if (lsGet('abby-review-seen') === '1' && supported) { welcome.hidden = true; frame.src = R.pageByKey(page).src; }
+  if (lsGet('abby-review-seen') === '1' && supported) { welcome.hidden = true; stage.removeAttribute('inert'); bar.removeAttribute('inert'); frame.src = R.pageByKey(page).src; }
   window.addEventListener('beforeunload', function (e) { if (recorder) { e.preventDefault(); e.returnValue = ''; } });
 })();
 </script>

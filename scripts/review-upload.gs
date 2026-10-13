@@ -34,12 +34,16 @@ function doPost(e) {
     var id = String(body.id).replace(/[^0-9a-z-]/gi, '').slice(0, 40);
 
     lock.waitLock(30000);
-    var folder = folder_();
-    var dupe = findById_(folder, id);
-    if (dupe) return json_({ ok: true, id: dupe.getId(), name: dupe.getName(), duplicate: true });
-
-    var blob = Utilities.newBlob(Utilities.base64Decode(body.data), mime, name);
-    var file = folder.createFile(blob);
+    var folder = folder_(), props = PropertiesService.getScriptProperties();
+    var bytes = Utilities.base64Decode(body.data);
+    var existing = findById_(folder, id, name, props);
+    if (existing) {
+      // A retry of a note already saved. Keep whichever copy is longer (a partial copy can arrive first).
+      if (existing.getSize() >= bytes.length) return json_({ ok: true, id: existing.getId(), name: existing.getName(), duplicate: true });
+      existing.setTrashed(true);
+    }
+    var file = folder.createFile(Utilities.newBlob(bytes, mime, name));
+    props.setProperty('note:' + id, file.getId());
     file.setDescription(JSON.stringify({
       noteId: id, pages: body.pages || [body.page], startedAt: body.startedAt, durationMs: body.durationMs, size: body.size,
       receivedAt: new Date().toISOString()
@@ -63,12 +67,12 @@ function folder_() {
   props.setProperty('folderId', folder.getId());
   return folder;
 }
-function findById_(folder, id) {
-  var files = folder.searchFiles('fullText contains "' + id + '" and trashed = false');
-  while (files.hasNext()) {
-    var f = files.next();
-    try { if (JSON.parse(f.getDescription() || '{}').noteId === id) return f; } catch (e) {}
-  }
+/* Script properties are immediately consistent (Drive search is not); the deterministic name is the fallback. */
+function findById_(folder, id, name, props) {
+  var fileId = props.getProperty('note:' + id);
+  if (fileId) { try { var f = DriveApp.getFileById(fileId); if (!f.isTrashed()) return f; } catch (e) {} }
+  var files = folder.getFilesByName(name);
+  while (files.hasNext()) { var g = files.next(); if (!g.isTrashed()) return g; }
   return null;
 }
 function json_(o) {
